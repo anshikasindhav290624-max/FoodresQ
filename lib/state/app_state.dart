@@ -1,0 +1,572 @@
+import 'dart:async';
+import 'package:flutter/material.dart';
+import '../models/models.dart';
+import '../theme/app_theme.dart';
+
+class AppState extends ChangeNotifier {
+  UserRole _activeRole = UserRole.ngo;
+  UserRole get activeRole => _activeRole;
+
+  // NGO Requirement Signal State
+  bool _ngoAcceptingFood = true;
+  bool get ngoAcceptingFood => _ngoAcceptingFood;
+  int _ngoCapacityPercent = 80;
+  int get ngoCapacityPercent => _ngoCapacityPercent;
+  int _ngoMealsRequirement = 40;
+  int get ngoMealsRequirement => _ngoMealsRequirement;
+
+  // NGO Trust Score Engine State
+  final NgoTrustScore _trustScore = NgoTrustScore(
+    overallScore: 88,
+    trustLevel: 'TRUSTED',
+    levelColor: const Color(0xFF126B68),
+    collectionScore: 23,
+    distributionScore: 27,
+    acceptanceScore: 14,
+    pickupScore: 14,
+    completionScore: 9,
+    verifiedImpactScore: 4,
+    monthlyDelta: 2,
+    recentImprovements: [
+      '+2 On-Time Collection (29 Aug)',
+      '+1 Verified Distribution (28 Aug)',
+    ],
+  );
+  NgoTrustScore get trustScore => _trustScore;
+
+  // NGO Impact Stats
+  int _totalMealsSaved = 1860;
+  int get totalMealsSaved => _totalMealsSaved;
+  int _peopleServed = 1720;
+  int get peopleServed => _peopleServed;
+  double _foodDivertedKg = 380.0;
+  double get foodDivertedKg => _foodDivertedKg;
+  int _successfulPickups = 248;
+  int get successfulPickups => _successfulPickups;
+
+  // Restaurant Analytics Stats
+  double _restaurantRevenueToday = 4250.0;
+  double get restaurantRevenueToday => _restaurantRevenueToday;
+  double _restaurantWasteKgToday = 24.0;
+  double get restaurantWasteKgToday => _restaurantWasteKgToday;
+  int _restaurantSavedMealsToday = 18;
+  int get restaurantSavedMealsToday => _restaurantSavedMealsToday;
+
+  // Vendor Savings Stats
+  double _vendorTotalPurchases = 28500.0;
+  double get vendorTotalPurchases => _vendorTotalPurchases;
+  double _vendorMoneySaved = 6400.0;
+  double get vendorMoneySaved => _vendorMoneySaved;
+  int _vendorOrdersCount = 14;
+  int get vendorOrdersCount => _vendorOrdersCount;
+
+  // Kirana Recovery Stats
+  double _kiranaRevenueRecovered = 12800.0;
+  double get kiranaRevenueRecovered => _kiranaRevenueRecovered;
+  double _kiranaPotentialLoss = 2850.0;
+  double get kiranaPotentialLoss => _kiranaPotentialLoss;
+  int _kiranaExpiringProducts = 12;
+  int get kiranaExpiringProducts => _kiranaExpiringProducts;
+
+  // Lists
+  final List<SurplusItem> _surplusItems = [];
+  List<SurplusItem> get surplusItems => List.unmodifiable(_surplusItems);
+
+  final List<DiscountOffer> _discountOffers = [];
+  List<DiscountOffer> get discountOffers => List.unmodifiable(_discountOffers);
+
+  final List<TransactionRecord> _transactions = [];
+  List<TransactionRecord> get transactions => List.unmodifiable(_transactions);
+
+  final List<NotificationModel> _notifications = [];
+  List<NotificationModel> get notifications => List.unmodifiable(_notifications);
+
+  // 8-Minute Acceptance Cascade Timer
+  SurplusItem? _activeCascadeItem;
+  SurplusItem? get activeCascadeItem => _activeCascadeItem;
+  int _cascadeTimerSeconds = 480; // 8 minutes = 480 seconds
+  int get cascadeTimerSeconds => _cascadeTimerSeconds;
+  Timer? _timer;
+  bool _isCascadeActive = false;
+  bool get isCascadeActive => _isCascadeActive;
+
+  AppState() {
+    _initDemoData();
+  }
+
+  void setRole(UserRole role) {
+    _activeRole = role;
+    notifyListeners();
+  }
+
+  void toggleNgoRequirement() {
+    _ngoAcceptingFood = !_ngoAcceptingFood;
+    notifyListeners();
+  }
+
+  void updateNgoRequirement(int capacity, int requirement) {
+    _ngoCapacityPercent = capacity;
+    _ngoMealsRequirement = requirement;
+    notifyListeners();
+  }
+
+  // Demo Data Initialization
+  void _initDemoData() {
+    // 1. Surplus Items (Restaurant -> NGO / Sell)
+    _surplusItems.addAll([
+      SurplusItem(
+        id: 'SUR-101',
+        title: '🍱 Prepared North Indian Meals',
+        restaurantName: 'Urban Tadka',
+        mealsCount: 35,
+        category: 'Prepared Meals',
+        prepTime: DateTime.now().subtract(const Duration(hours: 2)),
+        safeUntilTime: DateTime.now().add(const Duration(hours: 4)),
+        isVeg: true,
+        location: 'Koramangala 5th Block',
+        distanceKm: 2.4,
+        status: 'active',
+        targetType: 'DONATE',
+      ),
+      SurplusItem(
+        id: 'SUR-102',
+        title: '🍛 Paneer Butter Masala & Naan',
+        restaurantName: 'The Green Bowl',
+        mealsCount: 20,
+        category: 'Gravy & Breads',
+        prepTime: DateTime.now().subtract(const Duration(hours: 1)),
+        safeUntilTime: DateTime.now().add(const Duration(hours: 3)),
+        isVeg: true,
+        location: 'Indiranagar 100ft Rd',
+        distanceKm: 4.1,
+        status: 'active',
+        targetType: 'DONATE',
+      ),
+      SurplusItem(
+        id: 'SUR-103',
+        title: '🍗 Chicken Biryani Combo Boxes',
+        restaurantName: 'Spice Route Kitchen',
+        mealsCount: 15,
+        category: 'Biryani & Rice',
+        prepTime: DateTime.now().subtract(const Duration(hours: 3)),
+        safeUntilTime: DateTime.now().add(const Duration(hours: 2)),
+        isVeg: false,
+        location: 'HSR Layout Sector 1',
+        distanceKm: 3.8,
+        status: 'accepted',
+        acceptedByNgo: 'Helping Hands Foundation',
+        targetType: 'DONATE',
+      ),
+    ]);
+
+    // 2. Discount Offers (Kirana -> Vendor)
+    _discountOffers.addAll([
+      DiscountOffer(
+        id: 'DIS-201',
+        kiranaName: 'Sharma General Store',
+        productName: '🍅 Fresh Red Tomatoes',
+        originalPrice: 40.0,
+        discountedPrice: 28.0,
+        discountPercent: 30,
+        availableQuantity: 45,
+        unit: 'kg',
+        expiresAt: DateTime.now().add(const Duration(days: 2)),
+        distanceKm: 3.2,
+        category: 'Vegetables',
+        isHighRisk: true,
+        aiReason: 'AI predicted unsold stock based on weekend footfall reduction',
+      ),
+      DiscountOffer(
+        id: 'DIS-202',
+        kiranaName: 'FreshMart Kirana',
+        productName: '🥛 Full Cream Milk Packs (500ml)',
+        originalPrice: 30.0,
+        discountedPrice: 21.0,
+        discountPercent: 30,
+        availableQuantity: 12,
+        unit: 'packs',
+        expiresAt: DateTime.now().add(const Duration(hours: 26)),
+        distanceKm: 1.8,
+        category: 'Dairy',
+        isHighRisk: true,
+        aiReason: 'Expires tomorrow. High risk of 100% value loss.',
+      ),
+      DiscountOffer(
+        id: 'DIS-203',
+        kiranaName: 'Daily Needs Hub',
+        productName: '🍚 Premium Basmati Rice (5kg)',
+        originalPrice: 450.0,
+        discountedPrice: 315.0,
+        discountPercent: 30,
+        availableQuantity: 8,
+        unit: 'bags',
+        expiresAt: DateTime.now().add(const Duration(days: 4)),
+        distanceKm: 2.5,
+        category: 'Grains & Staples',
+        isHighRisk: false,
+        aiReason: 'Packaging soft dent discount offer',
+      ),
+    ]);
+
+    // 3. Transactions Log
+    _transactions.addAll([
+      TransactionRecord(
+        id: 'TXN10482',
+        timestamp: DateTime.now().subtract(const Duration(hours: 3)),
+        itemTitle: '35 Meals (North Indian Thali)',
+        quantityStr: '35 Meals',
+        roleType: 'NGO',
+        originalValue: 4200.0,
+        finalValue: 0.0,
+        savedValue: 4200.0,
+        status: 'COMPLETED',
+        participant1: 'Urban Tadka',
+        participant2: 'Helping Hands Foundation',
+        impactSummary: '35 Meals Saved • 35 People Served • 14 kg Diverted',
+        timeline: [
+          TransactionStep(title: 'Food Posted by Urban Tadka', timestamp: '17:30', isCompleted: true),
+          TransactionStep(title: 'NGO Accepted (8-Min Cascade)', timestamp: '17:34', isCompleted: true),
+          TransactionStep(title: 'Food Picked Up by NGO', timestamp: '18:15', isCompleted: true),
+          TransactionStep(title: 'Distributed & Verified', timestamp: '19:10', isCompleted: true),
+        ],
+      ),
+      TransactionRecord(
+        id: 'TXN10481',
+        timestamp: DateTime.now().subtract(const Duration(hours: 6)),
+        itemTitle: '50 kg Organic Tomatoes Batch',
+        quantityStr: '50 kg',
+        roleType: 'VENDOR',
+        originalValue: 2000.0,
+        finalValue: 1400.0,
+        savedValue: 600.0,
+        status: 'COMPLETED',
+        participant1: 'Sharma General Store',
+        participant2: 'FreshBuy Traders',
+        impactSummary: '₹600 Money Saved • 50 kg Inventory Diverted',
+        timeline: [
+          TransactionStep(title: 'Discount Offer Created', timestamp: '14:00', isCompleted: true),
+          TransactionStep(title: 'Purchased by FreshBuy Traders', timestamp: '14:25', isCompleted: true),
+          TransactionStep(title: 'Pickup Completed', timestamp: '15:10', isCompleted: true),
+        ],
+      ),
+    ]);
+
+    // 4. Notifications
+    _notifications.addAll([
+      NotificationModel(
+        id: 'NOTIF-1',
+        title: '🍱 New Surplus Opportunity',
+        message: 'Urban Tadka posted 35 Meals (2.4 km away). 8-minute acceptance countdown initiated!',
+        timestamp: DateTime.now().subtract(const Duration(minutes: 5)),
+        targetRole: 'NGO',
+        actionKey: 'OPEN_CASCADE',
+      ),
+      NotificationModel(
+        id: 'NOTIF-2',
+        title: '🤖 AI Waste Forecast Alert',
+        message: 'Tomorrow\'s predicted surplus: 16 kg. Reduce Friday rice prep by 12%.',
+        timestamp: DateTime.now().subtract(const Duration(hours: 1)),
+        targetRole: 'RESTAURANT',
+      ),
+      NotificationModel(
+        id: 'NOTIF-3',
+        title: '🏷️ New 30% Off Deal',
+        message: 'FreshMart Kirana published 12 Milk Packs at ₹21/pack expiring tomorrow.',
+        timestamp: DateTime.now().subtract(const Duration(minutes: 20)),
+        targetRole: 'VENDOR',
+      ),
+      NotificationModel(
+        id: 'NOTIF-4',
+        title: '⚠ Expiry Warning',
+        message: '12 products expire within 3 days. Potential loss: ₹2,850. Create AI discount offer now.',
+        timestamp: DateTime.now().subtract(const Duration(hours: 2)),
+        targetRole: 'KIRANA',
+      ),
+    ]);
+
+    // Start default 8-minute cascade demo item
+    _startDemoCascade(_surplusItems.first);
+  }
+
+  // 8-Minute Cascade Engine
+  void _startDemoCascade(SurplusItem item) {
+    _activeCascadeItem = item;
+    _cascadeTimerSeconds = 480; // 8 minutes
+    _isCascadeActive = true;
+
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (t) {
+      if (_cascadeTimerSeconds > 0) {
+        _cascadeTimerSeconds--;
+        notifyListeners();
+      } else {
+        _cascadeTimeout();
+      }
+    });
+  }
+
+  void _cascadeTimeout() {
+    _timer?.cancel();
+    _isCascadeActive = false;
+    if (_activeCascadeItem != null) {
+      _notifications.insert(
+        0,
+        NotificationModel(
+          id: 'NOTIF-EXPIRE-${DateTime.now().millisecondsSinceEpoch}',
+          title: '⏱ 8-Minute Window Expired',
+          message: 'Acceptance window expired for ${_activeCascadeItem!.title}. Cascading to next highest-ranked NGO (Seva Meals Trust)...',
+          timestamp: DateTime.now(),
+          targetRole: 'NGO',
+        ),
+      );
+    }
+    notifyListeners();
+  }
+
+  void acceptCascadeOpportunity() {
+    if (_activeCascadeItem == null) return;
+    _timer?.cancel();
+    _isCascadeActive = false;
+
+    _activeCascadeItem!.status = 'accepted';
+    _activeCascadeItem!.acceptedByNgo = 'Helping Hands Foundation';
+
+    // Add notification
+    _notifications.insert(
+      0,
+      NotificationModel(
+        id: 'NOTIF-ACCEPT-${DateTime.now().millisecondsSinceEpoch}',
+        title: '✅ Opportunity Accepted!',
+        message: 'You accepted ${_activeCascadeItem!.mealsCount} meals from ${_activeCascadeItem!.restaurantName}. Pickup tracking initiated.',
+        timestamp: DateTime.now(),
+        targetRole: 'NGO',
+      ),
+    );
+
+    notifyListeners();
+  }
+
+  void declineCascadeOpportunity() {
+    if (_activeCascadeItem == null) return;
+    _timer?.cancel();
+    _isCascadeActive = false;
+
+    _notifications.insert(
+      0,
+      NotificationModel(
+        id: 'NOTIF-DECLINE-${DateTime.now().millisecondsSinceEpoch}',
+        title: 'Opportunity Declined',
+        message: 'Cascaded opportunity to next best matching NGO in network.',
+        timestamp: DateTime.now(),
+        targetRole: 'NGO',
+      ),
+    );
+
+    notifyListeners();
+  }
+
+  void completeFoodPickupAndDistribution(SurplusItem item, int peopleServedCount) {
+    item.status = 'distributed';
+    _totalMealsSaved += item.mealsCount;
+    _peopleServed += peopleServedCount;
+    _foodDivertedKg += (item.mealsCount * 0.4); // approx 400g per meal
+    _successfulPickups += 1;
+
+    // Dynamically update Trust Score (+4 points demo effect!)
+    _trustScore.addSuccessfulDistribution();
+
+    // Create transaction record
+    final newTxn = TransactionRecord(
+      id: 'TXN${10483 + _transactions.length}',
+      timestamp: DateTime.now(),
+      itemTitle: '${item.mealsCount} Meals (${item.title})',
+      quantityStr: '${item.mealsCount} Meals',
+      roleType: 'NGO',
+      originalValue: item.mealsCount * 120.0,
+      finalValue: 0.0,
+      savedValue: item.mealsCount * 120.0,
+      status: 'COMPLETED',
+      participant1: item.restaurantName,
+      participant2: 'Helping Hands Foundation',
+      impactSummary: '${item.mealsCount} Meals Saved • $peopleServedCount People Served • ⭐ Trust Score Updated to ${_trustScore.overallScore}',
+      timeline: [
+        TransactionStep(title: 'Food Posted by ${item.restaurantName}', timestamp: 'Just now', isCompleted: true),
+        TransactionStep(title: 'NGO Accepted (8-Min Window)', timestamp: 'Just now', isCompleted: true),
+        TransactionStep(title: 'Food Collected', timestamp: 'Just now', isCompleted: true),
+        TransactionStep(title: 'Distributed to Beneficiaries', timestamp: 'Just now', isCompleted: true),
+      ],
+    );
+
+    _transactions.insert(0, newTxn);
+
+    // Notification
+    _notifications.insert(
+      0,
+      NotificationModel(
+        id: 'NOTIF-DIST-${DateTime.now().millisecondsSinceEpoch}',
+        title: '🎉 Food Recovery Completed!',
+        message: 'Successfully served $peopleServedCount people. Trust Score updated to ⭐ ${_trustScore.overallScore} (+4 points)!',
+        timestamp: DateTime.now(),
+        targetRole: 'NGO',
+      ),
+    );
+
+    notifyListeners();
+  }
+
+  // Restaurant Action: Add Surplus
+  void addSurplusItem({
+    required String title,
+    required int mealsCount,
+    required String category,
+    required String targetType,
+    required String location,
+    double? originalPrice,
+    double? discountedPrice,
+  }) {
+    final newItem = SurplusItem(
+      id: 'SUR-${104 + _surplusItems.length}',
+      title: title,
+      restaurantName: 'Urban Tadka',
+      mealsCount: mealsCount,
+      category: category,
+      prepTime: DateTime.now(),
+      safeUntilTime: DateTime.now().add(const Duration(hours: 4)),
+      isVeg: true,
+      location: location,
+      distanceKm: 1.5,
+      status: 'active',
+      targetType: targetType,
+      originalPrice: originalPrice,
+      discountedPrice: discountedPrice,
+    );
+
+    _surplusItems.insert(0, newItem);
+    _restaurantSavedMealsToday += mealsCount;
+    _restaurantRevenueToday += (discountedPrice ?? 0) * mealsCount;
+
+    // Automatically trigger Smart Matching and 8-min Cascade
+    _startDemoCascade(newItem);
+
+    _notifications.insert(
+      0,
+      NotificationModel(
+        id: 'NOTIF-SURPLUS-${DateTime.now().millisecondsSinceEpoch}',
+        title: '🚀 Surplus Posted & Smart Match Triggered',
+        message: 'Smart Matching Engine ranked Helping Hands NGO (91% Match). 8-minute acceptance window dispatched.',
+        timestamp: DateTime.now(),
+        targetRole: 'RESTAURANT',
+      ),
+    );
+
+    notifyListeners();
+  }
+
+  // Kirana Action: Create Discount Offer
+  void createDiscountOffer({
+    required String productName,
+    required double originalPrice,
+    required double discountedPrice,
+    required int discountPercent,
+    required int quantity,
+    required String unit,
+    required String category,
+  }) {
+    final newOffer = DiscountOffer(
+      id: 'DIS-${204 + _discountOffers.length}',
+      kiranaName: 'Sharma General Store',
+      productName: productName,
+      originalPrice: originalPrice,
+      discountedPrice: discountedPrice,
+      discountPercent: discountPercent,
+      availableQuantity: quantity,
+      unit: unit,
+      expiresAt: DateTime.now().add(const Duration(days: 2)),
+      distanceKm: 2.1,
+      category: category,
+      isHighRisk: true,
+      aiReason: 'AI recommended 30% discount to prevent inventory loss',
+    );
+
+    _discountOffers.insert(0, newOffer);
+    if (_kiranaExpiringProducts > 0) _kiranaExpiringProducts--;
+
+    _notifications.insert(
+      0,
+      NotificationModel(
+        id: 'NOTIF-KIRANA-${DateTime.now().millisecondsSinceEpoch}',
+        title: '🏷️ Discount Offer Published to Vendors',
+        message: '$productName ($quantity $unit) published at $discountPercent% OFF (₹$discountedPrice). Visible to nearby Vendor buyers.',
+        timestamp: DateTime.now(),
+        targetRole: 'KIRANA',
+      ),
+    );
+
+    notifyListeners();
+  }
+
+  // Vendor Action: Purchase Discount Offer
+  void purchaseDiscountOffer(DiscountOffer offer) {
+    offer.isPurchased = true;
+
+    final totalPaid = offer.discountedPrice * offer.availableQuantity;
+    final totalOriginal = offer.originalPrice * offer.availableQuantity;
+    final saved = totalOriginal - totalPaid;
+
+    _vendorTotalPurchases += totalPaid;
+    _vendorMoneySaved += saved;
+    _vendorOrdersCount += 1;
+
+    _kiranaRevenueRecovered += totalPaid;
+    if (_kiranaPotentialLoss >= saved) {
+      _kiranaPotentialLoss -= saved;
+    }
+
+    final newTxn = TransactionRecord(
+      id: 'TXN${10483 + _transactions.length}',
+      timestamp: DateTime.now(),
+      itemTitle: '${offer.availableQuantity} ${offer.unit} ${offer.productName}',
+      quantityStr: '${offer.availableQuantity} ${offer.unit}',
+      roleType: 'VENDOR',
+      originalValue: totalOriginal,
+      finalValue: totalPaid,
+      savedValue: saved,
+      status: 'COMPLETED',
+      participant1: offer.kiranaName,
+      participant2: 'FreshBuy Traders',
+      impactSummary: 'Purchased at ${offer.discountPercent}% OFF • Saved ₹${saved.toStringAsFixed(0)} • Recovered ₹${totalPaid.toStringAsFixed(0)} for Kirana',
+      timeline: [
+        TransactionStep(title: 'Discount Published by ${offer.kiranaName}', timestamp: 'Just now', isCompleted: true),
+        TransactionStep(title: 'Purchased by Vendor (FreshBuy)', timestamp: 'Just now', isCompleted: true),
+        TransactionStep(title: 'Pickup Confirmed & Completed', timestamp: 'Just now', isCompleted: true),
+      ],
+    );
+
+    _transactions.insert(0, newTxn);
+
+    _notifications.insert(
+      0,
+      NotificationModel(
+        id: 'NOTIF-BUY-${DateTime.now().millisecondsSinceEpoch}',
+        title: '🛒 Deal Purchased Successfully!',
+        message: 'You purchased ${offer.productName} for ₹${totalPaid.toStringAsFixed(0)}. You saved ₹${saved.toStringAsFixed(0)}!',
+        timestamp: DateTime.now(),
+        targetRole: 'VENDOR',
+      ),
+    );
+
+    notifyListeners();
+  }
+
+  void markNotificationRead(String id) {
+    final notif = _notifications.firstWhere((n) => n.id == id, orElse: () => _notifications.first);
+    notif.isRead = true;
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+}
