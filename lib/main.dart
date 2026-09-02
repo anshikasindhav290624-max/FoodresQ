@@ -22,7 +22,7 @@ class RescuEatsApp extends StatelessWidget {
     return Consumer<AppState>(
       builder: (context, state, child) {
         return MaterialApp(
-          title: 'RescuEats — Smart Food & Inventory Recovery',
+          title: 'FoodresQ — Rescue Food. Recover Value. Reduce Waste.',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.getThemeData(state.activeRole),
           home: const SplashScreen(),

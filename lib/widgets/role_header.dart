@@ -31,32 +31,27 @@ class RoleHeader extends StatelessWidget {
         children: [
           Row(
             children: [
-              // Role Badge & Selector
-              GestureDetector(
-                onTap: () => _showRoleSwitchModal(context, state),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: primaryColor.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: primaryColor.withOpacity(0.4)),
-                  ),
-                  child: Row(
-                    children: [
-                      Text(AppColors.getRoleEmoji(activeRole), style: const TextStyle(fontSize: 14)),
-                      const SizedBox(width: 6),
-                      Text(
-                        AppColors.getRoleTitle(activeRole),
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w800,
-                          color: primaryColor,
-                        ),
+              // Role Badge (Static Role Indicator)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: primaryColor.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: primaryColor.withOpacity(0.4)),
+                ),
+                child: Row(
+                  children: [
+                    Text(AppColors.getRoleEmoji(activeRole), style: const TextStyle(fontSize: 14)),
+                    const SizedBox(width: 6),
+                    Text(
+                      AppColors.getRoleTitle(activeRole),
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                        color: primaryColor,
                       ),
-                      const SizedBox(width: 4),
-                      Icon(Icons.swap_horiz, size: 16, color: primaryColor),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
               const Spacer(),
@@ -131,89 +126,7 @@ class RoleHeader extends StatelessWidget {
     );
   }
 
-  void _showRoleSwitchModal(BuildContext context, AppState state) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (ctx) {
-        return Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Switch Demo Role Interface',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-              ),
-              const SizedBox(height: 4),
-              const Text(
-                'Test multi-role features live during presentation',
-                style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
-              ),
-              const SizedBox(height: 16),
-              ...UserRole.values.map((role) {
-                final isSelected = state.activeRole == role;
-                final roleColor = AppColors.getPrimaryForRole(role);
 
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: InkWell(
-                    onTap: () {
-                      state.setRole(role);
-                      Navigator.pop(ctx);
-                    },
-                    borderRadius: BorderRadius.circular(14),
-                    child: Container(
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: isSelected ? roleColor.withOpacity(0.1) : AppColors.background,
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(
-                          color: isSelected ? roleColor : AppColors.border,
-                          width: isSelected ? 2 : 1,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Text(AppColors.getRoleEmoji(role), style: const TextStyle(fontSize: 24)),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  AppColors.getRoleTitle(role),
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w800,
-                                    color: roleColor,
-                                  ),
-                                ),
-                                Text(
-                                  AppColors.getRoleSubtitle(role),
-                                  style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
-                                ),
-                              ],
-                            ),
-                          ),
-                          if (isSelected)
-                            Icon(Icons.check_circle, color: roleColor, size: 22),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              }),
-            ],
-          ),
-        );
-      },
-    );
-  }
 
   void _showEcosystemModal(BuildContext context) {
     showModalBottomSheet(

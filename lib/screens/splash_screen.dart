@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'welcome_role_screen.dart';
+import 'welcome_screen.dart';
 import '../theme/app_theme.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -16,7 +16,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
   @override
   void initState() {
-    super.initState() ;
+    super.initState();
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1600),
@@ -37,7 +37,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       if (mounted) {
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(
-            pageBuilder: (context, anim, secAnim) => const WelcomeRoleScreen(),
+            pageBuilder: (context, anim, secAnim) => const FoodresQWelcomeScreen(),
             transitionsBuilder: (context, anim, secAnim, child) {
               return FadeTransition(opacity: anim, child: child);
             },
@@ -92,14 +92,14 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                     ],
                   ),
                   child: const Icon(
-                    Icons.recycling_rounded,
+                    Icons.eco_rounded,
                     size: 72,
                     color: Colors.white,
                   ),
                 ),
                 const SizedBox(height: 24),
                 const Text(
-                  'RescuEats',
+                  'FoodresQ',
                   style: TextStyle(
                     fontSize: 38,
                     fontWeight: FontWeight.w900,
@@ -121,12 +121,12 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                       Icon(Icons.auto_awesome, color: Colors.white, size: 14),
                       SizedBox(width: 6),
                       Text(
-                        'AI-POWERED RECOVERY ECOSYSTEM',
+                        'RESCUE FOOD • RECOVER VALUE • REDUCE WASTE',
                         style: TextStyle(
-                          fontSize: 11,
+                          fontSize: 10,
                           fontWeight: FontWeight.w800,
                           color: Colors.white,
-                          letterSpacing: 1.2,
+                          letterSpacing: 1.0,
                         ),
                       ),
                     ],
@@ -134,7 +134,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 ),
                 const SizedBox(height: 32),
                 const Text(
-                  'Turning Surplus Into Opportunity',
+                  'Connecting Surplus to Need',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,

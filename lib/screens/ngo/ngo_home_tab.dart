@@ -3,6 +3,9 @@ import 'package:provider/provider.dart';
 import '../../models/models.dart';
 import '../../state/app_state.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/app_image.dart';
+import '../../widgets/metric_card.dart';
+import '../../widgets/subtle_background_animation.dart';
 import '../../widgets/trust_score_badge.dart';
 import '../../widgets/cascade_timer_widget.dart';
 import '../../widgets/smart_match_card.dart';
@@ -14,190 +17,320 @@ class NgoHomeTab extends StatelessWidget {
 
   const NgoHomeTab({super.key, required this.onNavigateTab});
 
+  String _getFoodImageUrl(int index) {
+    switch (index % 3) {
+      case 0:
+        return AppImage.foodThali;
+      case 1:
+        return AppImage.foodPaneer;
+      case 2:
+        return AppImage.foodBiryani;
+      default:
+        return AppImage.foodThali;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = Provider.of<AppState>(context);
     final isAccepting = state.ngoAcceptingFood;
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 1. LIVE DEMAND REQUIREMENT TOGGLE CARD
-          Container(
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: isAccepting ? AppColors.ngoPrimary : AppColors.border,
-                width: isAccepting ? 2 : 1,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: (isAccepting ? AppColors.ngoPrimary : Colors.grey).withOpacity(0.08),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          width: 10,
-                          height: 10,
-                          decoration: BoxDecoration(
-                            color: isAccepting ? AppColors.success : AppColors.critical,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          isAccepting ? 'ACCEPTING SURPLUS FOOD' : 'NOT ACCEPTING FOOD',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w900,
-                            color: isAccepting ? AppColors.success : AppColors.critical,
-                            letterSpacing: 1.0,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Switch(
-                      value: isAccepting,
-                      onChanged: (val) => state.toggleNgoRequirement(),
-                      activeColor: AppColors.ngoPrimary,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Current Capacity', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-                          Text(
-                            '${state.ngoCapacityPercent}%',
-                            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: AppColors.textPrimary),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(width: 1, height: 40, color: AppColors.border),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Requirement Target', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-                          Text(
-                            '${state.ngoMealsRequirement} Meals',
-                            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: AppColors.ngoPrimary),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // 2. TRUST SCORE BADGE
-          TrustScoreBadge(
-            trustScore: state.trustScore,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const NgoTrustScoreScreen()),
-              );
-            },
-          ),
-          const SizedBox(height: 16),
-
-          // 3. 8-MINUTE CASCADE OPPORTUNITY TIMER
-          if (state.isCascadeActive && state.activeCascadeItem != null) ...[
-            CascadeTimerWidget(
-              item: state.activeCascadeItem!,
-              timerSeconds: state.cascadeTimerSeconds,
-              onAccept: () {
-                state.acceptCascadeOpportunity();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Opportunity accepted! Opening Pickup Tracker...'),
-                    backgroundColor: AppColors.ngoPrimary,
+    return SubtleBackgroundAnimation(
+      role: UserRole.ngo,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 0. NGO HERO BANNER WITH REAL COMMUNITY FOOD IMAGE
+            Container(
+              width: double.infinity,
+              height: 140,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.ngoPrimary.withOpacity(0.12),
+                    blurRadius: 14,
+                    offset: const Offset(0, 4),
                   ),
-                );
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: AppImage(
+                        url: AppImage.ngoCommunity,
+                        borderRadius: 20,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              AppColors.ngoPrimary.withOpacity(0.85),
+                              AppColors.ngoPrimary.withOpacity(0.35),
+                            ],
+                            begin: Alignment.bottomLeft,
+                            end: Alignment.topRight,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: 16,
+                      bottom: 16,
+                      right: 16,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.25),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Text(
+                              'FOOD RECOVERY & COMMUNITY IMPACT',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white,
+                                letterSpacing: 1.0,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          const Text(
+                            'Helping Hands Foundation',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // 1. LIVE DEMAND REQUIREMENT TOGGLE CARD
+            Container(
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: isAccepting ? AppColors.ngoPrimary : AppColors.border,
+                  width: isAccepting ? 2 : 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: (isAccepting ? AppColors.ngoPrimary : Colors.grey).withOpacity(0.08),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            width: 10,
+                            height: 10,
+                            decoration: BoxDecoration(
+                              color: isAccepting ? AppColors.success : AppColors.critical,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            isAccepting ? 'ACCEPTING SURPLUS FOOD' : 'NOT ACCEPTING FOOD',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w900,
+                              color: isAccepting ? AppColors.success : AppColors.critical,
+                              letterSpacing: 1.0,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Switch(
+                        value: isAccepting,
+                        onChanged: (val) => state.toggleNgoRequirement(),
+                        activeColor: AppColors.ngoPrimary,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Current Capacity', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                            Text(
+                              '${state.ngoCapacityPercent}%',
+                              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: AppColors.textPrimary),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(width: 1, height: 40, color: AppColors.border),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Requirement Target', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                            Text(
+                              '${state.ngoMealsRequirement} Meals',
+                              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: AppColors.ngoPrimary),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // 2. LARGE NUMERIC IMPACT METRICS CARDS
+            Row(
+              children: [
+                Expanded(
+                  child: MetricCard(
+                    value: '${state.totalMealsSaved}',
+                    label: 'Meals Saved',
+                    emoji: '🍱',
+                    color: AppColors.ngoPrimary,
+                    badgeText: '+12% this wk',
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: MetricCard(
+                    value: '${state.peopleServed}',
+                    label: 'People Served',
+                    emoji: '🤝',
+                    color: const Color(0xFF4F46A5),
+                    badgeText: 'Verified',
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // 3. TRUST SCORE BADGE
+            TrustScoreBadge(
+              trustScore: state.trustScore,
+              onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => NgoPickupTrackingScreen(item: state.activeCascadeItem!),
-                  ),
+                  MaterialPageRoute(builder: (context) => const NgoTrustScoreScreen()),
                 );
-              },
-              onDecline: () {
-                state.declineCascadeOpportunity();
               },
             ),
             const SizedBox(height: 16),
-          ],
 
-          // 4. SMART MATCHING RECOMMENDATION BREAKDOWN
-          SmartMatchCard(
-            match: SmartMatchResult(
-              ngoName: 'Helping Hands Foundation',
-              overallMatch: 91,
-              capacityScore: 95,
-              distanceScore: 82,
-              requirementScore: 90,
-              trustScore: 92,
-              pickupReliability: 88,
-            ),
-          ),
-          const SizedBox(height: 20),
-
-          // 5. QUICK NEARBY FOOD SURPLUS FEED
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Nearby Available Surplus',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+            // 4. 8-MINUTE CASCADE OPPORTUNITY TIMER
+            if (state.isCascadeActive && state.activeCascadeItem != null) ...[
+              CascadeTimerWidget(
+                item: state.activeCascadeItem!,
+                timerSeconds: state.cascadeTimerSeconds,
+                onAccept: () {
+                  state.acceptCascadeOpportunity();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Opportunity accepted! Opening Pickup Tracker...'),
+                      backgroundColor: AppColors.ngoPrimary,
+                    ),
+                  );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NgoPickupTrackingScreen(item: state.activeCascadeItem!),
+                    ),
+                  );
+                },
+                onDecline: () {
+                  state.declineCascadeOpportunity();
+                },
               ),
-              TextButton(
-                onPressed: () => onNavigateTab(1),
-                child: const Text('View All (3) →'),
-              ),
+              const SizedBox(height: 16),
             ],
-          ),
-          const SizedBox(height: 8),
-          ...state.surplusItems.take(2).map((item) => Container(
+
+            // 5. SMART MATCHING RECOMMENDATION BREAKDOWN
+            SmartMatchCard(
+              match: SmartMatchResult(
+                ngoName: 'Helping Hands Foundation',
+                overallMatch: 91,
+                capacityScore: 95,
+                distanceScore: 82,
+                requirementScore: 90,
+                trustScore: 92,
+                pickupReliability: 88,
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // 6. QUICK NEARBY FOOD SURPLUS FEED WITH REAL FOOD IMAGES
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Nearby Available Surplus',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+                ),
+                TextButton(
+                  onPressed: () => onNavigateTab(1),
+                  child: const Text('View All (3) →'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            ...state.surplusItems.asMap().entries.take(2).map((entry) {
+              final index = entry.key;
+              final item = entry.value;
+              return Container(
                 margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(18),
                   border: Border.all(color: AppColors.border),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.04),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppColors.ngoBg,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Icon(Icons.fastfood, color: AppColors.ngoPrimary, size: 24),
+                    // Real Food Image
+                    AppImage(
+                      url: _getFoodImageUrl(index),
+                      width: 72,
+                      height: 72,
+                      borderRadius: 14,
                     ),
                     const SizedBox(width: 14),
                     Expanded(
@@ -207,16 +340,16 @@ class NgoHomeTab extends StatelessWidget {
                           Text(item.title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
                           const SizedBox(height: 2),
                           Text('${item.restaurantName} • ${item.distanceKm} km away', style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 6),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
-                              color: AppColors.ngoPrimary.withOpacity(0.1),
+                              color: AppColors.ngoPrimary.withOpacity(0.12),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               '${item.mealsCount} Meals • Pickup before 10:30 PM',
-                              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.ngoPrimary),
+                              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.ngoPrimary),
                             ),
                           ),
                         ],
@@ -224,8 +357,10 @@ class NgoHomeTab extends StatelessWidget {
                     ),
                   ],
                 ),
-              )),
-        ],
+              );
+            }),
+          ],
+        ),
       ),
     );
   }

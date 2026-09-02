@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../state/app_state.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/app_image.dart';
+import '../../widgets/empty_state_widget.dart';
+import '../../widgets/subtle_background_animation.dart';
 import '../../widgets/transaction_detail_dialog.dart';
 
 class NgoHistoryTab extends StatefulWidget {
@@ -19,81 +22,113 @@ class _NgoHistoryTabState extends State<NgoHistoryTab> {
     final state = Provider.of<AppState>(context);
     final txns = state.transactions;
 
-    return Column(
-      children: [
-        // Filter tabs
-        Container(
-          color: Colors.white,
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: ['ALL', 'COMPLETED', 'EXPIRED', 'CANCELLED'].map((filter) {
-              final isSel = selectedFilter == filter;
-              return ChoiceChip(
-                label: Text(filter),
-                selected: isSel,
-                onSelected: (v) {
-                  setState(() {
-                    selectedFilter = filter;
-                  });
-                },
-                selectedColor: AppColors.ngoPrimary,
-                labelStyle: TextStyle(color: isSel ? Colors.white : AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 11),
-              );
-            }).toList(),
+    return SubtleBackgroundAnimation(
+      role: UserRole.ngo,
+      child: Column(
+        children: [
+          // Filter tabs
+          Container(
+            color: Colors.white,
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: ['ALL', 'COMPLETED', 'EXPIRED', 'CANCELLED'].map((filter) {
+                final isSel = selectedFilter == filter;
+                return ChoiceChip(
+                  label: Text(filter),
+                  selected: isSel,
+                  onSelected: (v) {
+                    setState(() {
+                      selectedFilter = filter;
+                    });
+                  },
+                  selectedColor: AppColors.ngoPrimary,
+                  labelStyle: TextStyle(color: isSel ? Colors.white : AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 11),
+                );
+              }).toList(),
+            ),
           ),
-        ),
-        Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: txns.length,
-            itemBuilder: (context, index) {
-              final txn = txns[index];
-              return Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.border),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('TRANSACTION #${txn.id}', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 11, color: AppColors.textSecondary)),
-                        Text('${txn.status} ✓', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12, color: AppColors.success)),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    Text(txn.itemTitle, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
-                    const SizedBox(height: 2),
-                    Text('${txn.participant1} ➔ ${txn.participant2}', style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-                    const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(txn.impactSummary, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.ngoPrimary)),
-                        OutlinedButton(
-                          onPressed: () => TransactionDetailDialog.show(context, txn),
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                            minimumSize: Size.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          child: const Text('Details', style: TextStyle(fontSize: 12)),
+          Expanded(
+            child: txns.isEmpty
+                ? const EmptyStateWidget(
+                    title: 'No Transaction History',
+                    description: 'Your completed food recovery transactions will be recorded here.',
+                    emoji: '📜',
+                    color: AppColors.ngoPrimary,
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: txns.length,
+                    itemBuilder: (context, index) {
+                      final txn = txns[index];
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: AppColors.border),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.04),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            },
+                        child: Row(
+                          children: [
+                            AppImage(
+                              url: AppImage.foodThali,
+                              width: 60,
+                              height: 60,
+                              borderRadius: 12,
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('TXN #${txn.id}', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 11, color: AppColors.textSecondary)),
+                                      Text('${txn.status} ✓', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 11, color: AppColors.success)),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(txn.itemTitle, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                                  const SizedBox(height: 2),
+                                  Text('${txn.participant1} ➔ ${txn.participant2}', style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                                  const SizedBox(height: 6),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Text(txn.impactSummary, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.ngoPrimary), overflow: TextOverflow.ellipsis),
+                                      ),
+                                      OutlinedButton(
+                                        onPressed: () => TransactionDetailDialog.show(context, txn),
+                                        style: OutlinedButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                          minimumSize: Size.zero,
+                                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                        ),
+                                        child: const Text('Details', style: TextStyle(fontSize: 11)),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../state/app_state.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/app_image.dart';
 
 class CreateDiscountScreen extends StatefulWidget {
   const CreateDiscountScreen({super.key});
@@ -22,6 +23,11 @@ class _CreateDiscountScreenState extends State<CreateDiscountScreen> {
   @override
   Widget build(BuildContext context) {
     final state = Provider.of<AppState>(context);
+
+    final mrp = double.tryParse(_mrpCtrl.text) ?? 30.0;
+    final discountPrice = double.tryParse(_discountedPriceCtrl.text) ?? 21.0;
+    final qty = int.tryParse(_qtyCtrl.text) ?? 12;
+    final totalRecovered = discountPrice * qty;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -61,6 +67,62 @@ class _CreateDiscountScreenState extends State<CreateDiscountScreen> {
             ),
             const SizedBox(height: 20),
 
+            // Visual Price Transformation Box
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: AppColors.kiranaPrimary.withOpacity(0.4), width: 1.5),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.kiranaPrimary.withOpacity(0.06),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Column(
+                        children: [
+                          const Text('Original MRP', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                          const SizedBox(height: 2),
+                          Text('₹${mrp.toStringAsFixed(0)}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, decoration: TextDecoration.lineThrough, color: Colors.grey)),
+                        ],
+                      ),
+                      const Icon(Icons.arrow_forward_rounded, color: AppColors.kiranaPrimary, size: 24),
+                      Column(
+                        children: [
+                          const Text('30% Discount Price', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.kiranaPrimary)),
+                          const SizedBox(height: 2),
+                          Text('₹${discountPrice.toStringAsFixed(0)}', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: AppColors.kiranaPrimary)),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const Divider(height: 20),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.kiranaBg,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      '💰 ESTIMATED REVENUE RECOVERY: ₹${totalRecovered.toStringAsFixed(0)}',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: AppColors.kiranaPrimary),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+
             TextField(
               controller: _productCtrl,
               decoration: const InputDecoration(labelText: 'Product Name'),
@@ -72,6 +134,7 @@ class _CreateDiscountScreenState extends State<CreateDiscountScreen> {
                   child: TextField(
                     controller: _mrpCtrl,
                     keyboardType: TextInputType.number,
+                    onChanged: (v) => setState(() {}),
                     decoration: const InputDecoration(labelText: 'Original MRP (₹)'),
                   ),
                 ),
@@ -80,6 +143,7 @@ class _CreateDiscountScreenState extends State<CreateDiscountScreen> {
                   child: TextField(
                     controller: _discountedPriceCtrl,
                     keyboardType: TextInputType.number,
+                    onChanged: (v) => setState(() {}),
                     decoration: const InputDecoration(labelText: 'Discounted Price (₹)'),
                   ),
                 ),
@@ -92,6 +156,7 @@ class _CreateDiscountScreenState extends State<CreateDiscountScreen> {
                   child: TextField(
                     controller: _qtyCtrl,
                     keyboardType: TextInputType.number,
+                    onChanged: (v) => setState(() {}),
                     decoration: const InputDecoration(labelText: 'Available Stock Quantity'),
                   ),
                 ),
@@ -112,19 +177,20 @@ class _CreateDiscountScreenState extends State<CreateDiscountScreen> {
 
             SizedBox(
               width: double.infinity,
+              height: 52,
               child: ElevatedButton.icon(
                 onPressed: () {
                   final title = _productCtrl.text;
-                  final mrp = double.tryParse(_mrpCtrl.text) ?? 30.0;
-                  final discountPrice = double.tryParse(_discountedPriceCtrl.text) ?? 21.0;
-                  final qty = int.tryParse(_qtyCtrl.text) ?? 12;
+                  final origMrp = double.tryParse(_mrpCtrl.text) ?? 30.0;
+                  final dPrice = double.tryParse(_discountedPriceCtrl.text) ?? 21.0;
+                  final quantity = int.tryParse(_qtyCtrl.text) ?? 12;
 
                   state.createDiscountOffer(
                     productName: title,
-                    originalPrice: mrp,
-                    discountedPrice: discountPrice,
+                    originalPrice: origMrp,
+                    discountedPrice: dPrice,
                     discountPercent: _discountPercent,
-                    quantity: qty,
+                    quantity: quantity,
                     unit: _unit,
                     category: _category,
                   );
@@ -145,7 +211,7 @@ class _CreateDiscountScreenState extends State<CreateDiscountScreen> {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Published $title ($qty $_unit)', style: const TextStyle(fontWeight: FontWeight.bold)),
+                          Text('Published $title ($quantity $_unit)', style: const TextStyle(fontWeight: FontWeight.bold)),
                           const SizedBox(height: 8),
                           const Text('• Visible on Vendor Buyer Marketplace.'),
                           const Text('• Nearby buyers notified immediately.'),
@@ -167,10 +233,10 @@ class _CreateDiscountScreenState extends State<CreateDiscountScreen> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.kiranaPrimary,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 ),
                 icon: const Icon(Icons.publish),
-                label: const Text('PUBLISH OFFER TO VENDOR MARKETPLACE'),
+                label: const Text('PUBLISH OFFER TO VENDOR MARKETPLACE', style: TextStyle(fontWeight: FontWeight.w800)),
               ),
             ),
           ],

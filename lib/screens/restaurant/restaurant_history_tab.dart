@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../state/app_state.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/app_image.dart';
+import '../../widgets/empty_state_widget.dart';
+import '../../widgets/subtle_background_animation.dart';
 import '../../widgets/transaction_detail_dialog.dart';
 
 class RestaurantHistoryTab extends StatelessWidget {
@@ -12,45 +15,80 @@ class RestaurantHistoryTab extends StatelessWidget {
     final state = Provider.of<AppState>(context);
     final txns = state.transactions;
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: txns.length,
-      itemBuilder: (context, index) {
-        final txn = txns[index];
-        return Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.border),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('#${txn.id}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: AppColors.textSecondary)),
-                  Text(txn.status, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: AppColors.success)),
-                ],
-              ),
-              const SizedBox(height: 6),
-              Text(txn.itemTitle, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 4),
-              Text(txn.impactSummary, style: const TextStyle(fontSize: 12, color: AppColors.restaurantPrimary)),
-              const SizedBox(height: 10),
-              Align(
-                alignment: Alignment.centerRight,
-                child: OutlinedButton(
-                  onPressed: () => TransactionDetailDialog.show(context, txn),
-                  child: const Text('View Receipt'),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+    return SubtleBackgroundAnimation(
+      role: UserRole.restaurant,
+      child: txns.isEmpty
+          ? const EmptyStateWidget(
+              title: 'No Surplus History',
+              description: 'Completed food rescue transactions will appear here.',
+              emoji: '📜',
+              color: AppColors.restaurantPrimary,
+            )
+          : ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: txns.length,
+              itemBuilder: (context, index) {
+                final txn = txns[index];
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColors.border),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.04),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      AppImage(
+                        url: AppImage.foodPaneer,
+                        width: 60,
+                        height: 60,
+                        borderRadius: 12,
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('#${txn.id}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: AppColors.textSecondary)),
+                                Text(txn.status, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: AppColors.success)),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            Text(txn.itemTitle, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 2),
+                            Text(txn.impactSummary, style: const TextStyle(fontSize: 11, color: AppColors.restaurantPrimary, fontWeight: FontWeight.w700), overflow: TextOverflow.ellipsis),
+                            const SizedBox(height: 6),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: OutlinedButton(
+                                onPressed: () => TransactionDetailDialog.show(context, txn),
+                                style: OutlinedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                  minimumSize: Size.zero,
+                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                ),
+                                child: const Text('View Receipt', style: TextStyle(fontSize: 11)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
     );
   }
 }

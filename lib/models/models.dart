@@ -68,6 +68,15 @@ class DiscountOffer {
     required this.aiReason,
     this.isPurchased = false,
   });
+
+  bool get isExpiring {
+    final days = expiresAt.difference(DateTime.now()).inDays;
+    return isHighRisk || days <= 3;
+  }
+
+  bool get isLowStock {
+    return availableQuantity <= 5;
+  }
 }
 
 class TransactionStep {

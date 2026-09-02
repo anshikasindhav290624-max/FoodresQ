@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../../models/models.dart';
 import '../../state/app_state.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/app_image.dart';
+import '../../widgets/subtle_background_animation.dart';
 
 class NgoPickupTrackingScreen extends StatefulWidget {
   final SurplusItem item;
@@ -29,158 +31,222 @@ class _NgoPickupTrackingScreenState extends State<NgoPickupTrackingScreen> {
         title: const Text('Food Pickup & Distribution'),
         backgroundColor: Colors.white,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Status Header
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppColors.ngoBg,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.ngoPrimary.withOpacity(0.3)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: SubtleBackgroundAnimation(
+        role: UserRole.ngo,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Food Thumbnail & Restaurant Banner Header
+              Container(
+                height: 140,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.ngoPrimary.withOpacity(0.12),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Stack(
                     children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: AppColors.ngoPrimary,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          '${item.mealsCount} MEALS BATCH',
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                      Positioned.fill(
+                        child: AppImage(
+                          url: AppImage.foodThali,
+                          borderRadius: 20,
+                          fit: BoxFit.cover,
                         ),
                       ),
-                      Text(
-                        '${item.distanceKm} km away',
-                        style: const TextStyle(fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+                      Positioned.fill(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.black.withOpacity(0.75),
+                                Colors.transparent,
+                              ],
+                              begin: Alignment.bottomLeft,
+                              end: Alignment.topRight,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        left: 16,
+                        bottom: 16,
+                        right: 16,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.ngoPrimary,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Text(
+                                    '${item.mealsCount} MEALS BATCH',
+                                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 11),
+                                  ),
+                                ),
+                                Text(
+                                  '📍 ${item.distanceKm} km away',
+                                  style: const TextStyle(fontWeight: FontWeight.w700, color: Colors.white, fontSize: 12),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              item.title,
+                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.white),
+                            ),
+                            Text('Pickup: ${item.restaurantName}, ${item.location}', style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                          ],
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
-                  Text(
-                    item.title,
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: AppColors.textPrimary),
-                  ),
-                  const SizedBox(height: 4),
-                  Text('Pickup Location: ${item.restaurantName}, ${item.location}', style: const TextStyle(color: AppColors.textSecondary)),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Timeline Steps
-            const Text('Recovery Progress Timeline:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.border),
-              ),
-              child: Column(
-                children: [
-                  _buildTimelineStep('Food Opportunity Posted', 'Urban Tadka posted 35 Meals', true),
-                  _buildTimelineStep('NGO Accepted', 'Accepted within 8-min cascade window', true),
-                  _buildTimelineStep('Pickup at Restaurant', 'Collect food before deadline (10:30 PM)', isReceived),
-                  _buildTimelineStep('Beneficiary Distribution', 'Distribute food & report verified impact', isDistributed),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Interactive Actions
-            if (!isReceived) ...[
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    setState(() {
-                      isReceived = true;
-                    });
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Food marked as RECEIVED! Proceeding to distribution.')),
-                    );
-                  },
-                  icon: const Icon(Icons.shopping_bag_outlined),
-                  label: const Text('MARK AS RECEIVED FROM RESTAURANT'),
                 ),
               ),
-            ] else if (!isDistributed) ...[
+              const SizedBox(height: 20),
+
+              // Recovery Progress Timeline
+              const Text('Recovery Progress Timeline:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+              const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.ngoPrimary),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: AppColors.border),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.04),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Record Food Distribution:', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
-                    const SizedBox(height: 10),
-                    TextField(
-                      controller: _peopleServedCtrl,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        labelText: 'Number of People Served',
-                        hintText: 'Enter beneficiary count',
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          setState(() {
-                            isDistributed = true;
-                          });
-                          final count = int.tryParse(_peopleServedCtrl.text) ?? 35;
-                          state.completeFoodPickupAndDistribution(item, count);
+                    _buildTimelineStep('Food Opportunity Posted', 'Urban Tadka posted 35 Meals', true),
+                    _buildTimelineStep('NGO Accepted', 'Accepted within 8-min cascade window', true),
+                    _buildTimelineStep('Pickup at Restaurant', 'Collect food before deadline (10:30 PM)', isReceived),
+                    _buildTimelineStep('Beneficiary Distribution', 'Distribute food & report verified impact', isDistributed),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
 
-                          _showSuccessDialog(context, state, count);
-                        },
-                        style: ElevatedButton.styleFrom(backgroundColor: AppColors.success),
-                        icon: const Icon(Icons.verified),
-                        label: const Text('MARK AS DISTRIBUTED & COMPLETE'),
+              // Interactive Actions
+              if (!isReceived) ...[
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        isReceived = true;
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Food marked as RECEIVED! Proceeding to distribution.')),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.ngoPrimary,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    ),
+                    icon: const Icon(Icons.shopping_bag_outlined),
+                    label: const Text('MARK AS RECEIVED FROM RESTAURANT', style: TextStyle(fontWeight: FontWeight.w800)),
+                  ),
+                ),
+              ] else if (!isDistributed) ...[
+                Container(
+                  padding: const EdgeInsets.all(18),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: AppColors.ngoPrimary, width: 1.5),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Record Food Distribution:', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+                      const SizedBox(height: 10),
+                      TextField(
+                        controller: _peopleServedCtrl,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          labelText: 'Number of People Served',
+                          hintText: 'Enter beneficiary count',
+                        ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            setState(() {
+                              isDistributed = true;
+                            });
+                            final count = int.tryParse(_peopleServedCtrl.text) ?? 35;
+                            state.completeFoodPickupAndDistribution(item, count);
+
+                            _showSuccessDialog(context, state, count);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.success,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          ),
+                          icon: const Icon(Icons.verified),
+                          label: const Text('MARK AS DISTRIBUTED & COMPLETE', style: TextStyle(fontWeight: FontWeight.w800)),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ] else ...[
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: AppColors.success.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.success),
+              ] else ...[
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: AppColors.success.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: AppColors.success, width: 1.5),
+                  ),
+                  child: Column(
+                    children: [
+                      const Icon(Icons.check_circle_rounded, color: AppColors.success, size: 54),
+                      const SizedBox(height: 10),
+                      const Text(
+                        'FOOD RECOVERY COMPLETED ✓',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.success),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: const [
+                          Text('✓ 35 Meals Saved', style: TextStyle(fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
+                          Text('✓ 35 People Served', style: TextStyle(fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
+                          Text('✓ 14 kg Diverted', style: TextStyle(fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-                child: Column(
-                  children: const [
-                    Icon(Icons.check_circle, color: AppColors.success, size: 48),
-                    SizedBox(height: 10),
-                    Text(
-                      'FOOD RECOVERY COMPLETED ✓',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.success),
-                    ),
-                    SizedBox(height: 4),
-                    Text('Trust Score updated! Impact stats recorded in public ledger.', style: TextStyle(color: AppColors.textSecondary)),
-                  ],
-                ),
-              ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

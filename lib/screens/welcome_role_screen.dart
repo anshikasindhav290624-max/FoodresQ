@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../state/app_state.dart';
 import '../theme/app_theme.dart';
-import 'auth_screen.dart';
+import '../widgets/app_image.dart';
+import '../widgets/subtle_background_animation.dart';
+import 'role_auth_screen.dart';
 
 class WelcomeRoleScreen extends StatelessWidget {
   const WelcomeRoleScreen({super.key});
@@ -11,84 +13,116 @@ class WelcomeRoleScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppColors.ngoPrimary.withOpacity(0.12),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.recycling, color: AppColors.ngoPrimary, size: 24),
-                  ),
-                  const SizedBox(width: 10),
-                  const Text(
-                    'RescuEats',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w900,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              const Text(
-                'Who are you?',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w900,
-                  color: AppColors.textPrimary,
-                  height: 1.1,
-                ),
-              ),
-              const SizedBox(height: 6),
-              const Text(
-                'Choose your role to continue into the circular recovery platform.',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(height: 24),
-              Expanded(
-                child: ListView(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: SubtleBackgroundAnimation(
+        role: UserRole.ngo,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header brand pill
+                Row(
                   children: [
-                    _buildRoleCard(
-                      context: context,
-                      role: UserRole.ngo,
-                      badge: 'FLOW A — FOOD RECOVERY',
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppColors.ngoPrimary.withOpacity(0.12),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.eco_rounded, color: AppColors.ngoPrimary, size: 22),
                     ),
-                    const SizedBox(height: 16),
-                    _buildRoleCard(
-                      context: context,
-                      role: UserRole.restaurant,
-                      badge: 'FLOW A — SURPLUS SUPPLIER',
-                    ),
-                    const SizedBox(height: 16),
-                    _buildRoleCard(
-                      context: context,
-                      role: UserRole.vendor,
-                      badge: 'FLOW B — DISCOUNT BUYER',
-                    ),
-                    const SizedBox(height: 16),
-                    _buildRoleCard(
-                      context: context,
-                      role: UserRole.kirana,
-                      badge: 'FLOW B — INVENTORY SELLER',
+                    const SizedBox(width: 10),
+                    const Text(
+                      'FoodresQ',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
                   ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 20),
+
+                // Title
+                const Text(
+                  'How will you use FoodresQ?',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.textPrimary,
+                    height: 1.15,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+                const SizedBox(height: 6),
+
+                // Subtitle
+                const Text(
+                  'Choose your role to continue.',
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // 4 Role Cards with Rich Imagery
+                Expanded(
+                  child: ListView(
+                    physics: const BouncingScrollPhysics(),
+                    children: [
+                      _buildRoleCard(
+                        context: context,
+                        role: UserRole.restaurant,
+                        emoji: '🍽️',
+                        title: 'RESTAURANT',
+                        subtitle: 'Post surplus food and recover value',
+                        imageUrl: AppImage.restaurantKitchen,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildRoleCard(
+                        context: context,
+                        role: UserRole.ngo,
+                        emoji: '🤝',
+                        title: 'NGO',
+                        subtitle: 'Receive and distribute surplus food',
+                        imageUrl: AppImage.ngoCommunity,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildRoleCard(
+                        context: context,
+                        role: UserRole.vendor,
+                        emoji: '📦',
+                        title: 'VENDOR',
+                        subtitle: 'Find discounted food and grocery deals',
+                        imageUrl: AppImage.vendorWholesale,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildRoleCard(
+                        context: context,
+                        role: UserRole.kirana,
+                        emoji: '🏪',
+                        title: 'KIRANA',
+                        subtitle: 'Recover value from near-expiry inventory',
+                        imageUrl: AppImage.kiranaStore,
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -98,13 +132,13 @@ class WelcomeRoleScreen extends StatelessWidget {
   Widget _buildRoleCard({
     required BuildContext context,
     required UserRole role,
-    required String badge,
+    required String emoji,
+    required String title,
+    required String subtitle,
+    required String imageUrl,
   }) {
     final roleColor = AppColors.getPrimaryForRole(role);
     final bgColor = AppColors.getBgForRole(role);
-    final emoji = AppColors.getRoleEmoji(role);
-    final title = AppColors.getRoleTitle(role);
-    final subtitle = AppColors.getRoleSubtitle(role);
 
     return InkWell(
       onTap: () {
@@ -112,12 +146,14 @@ class WelcomeRoleScreen extends StatelessWidget {
         state.setRole(role);
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => AuthScreen(role: role)),
+          MaterialPageRoute(
+            builder: (context) => RoleAuthScreen(role: role),
+          ),
         );
       },
       borderRadius: BorderRadius.circular(20),
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: bgColor,
           borderRadius: BorderRadius.circular(20),
@@ -132,21 +168,36 @@ class WelcomeRoleScreen extends StatelessWidget {
         ),
         child: Row(
           children: [
+            // Image Thumbnail Container
             Container(
-              padding: const EdgeInsets.all(16),
+              width: 64,
+              height: 64,
               decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: roleColor.withOpacity(0.12),
-                    blurRadius: 8,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: roleColor.withOpacity(0.3), width: 1),
+              ),
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: AppImage(
+                      url: imageUrl,
+                      borderRadius: 16,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 4,
+                    right: 4,
+                    child: Container(
+                      padding: const EdgeInsets.all(3),
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Text(emoji, style: const TextStyle(fontSize: 12)),
+                    ),
                   ),
                 ],
-              ),
-              child: Text(
-                emoji,
-                style: const TextStyle(fontSize: 28),
               ),
             ),
             const SizedBox(width: 16),
@@ -154,43 +205,29 @@ class WelcomeRoleScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: roleColor.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      badge,
-                      style: TextStyle(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w800,
-                        color: roleColor,
-                        letterSpacing: 0.8,
-                      ),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w900,
+                      color: roleColor,
+                      letterSpacing: 0.5,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w900,
-                      color: roleColor,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
                     subtitle,
                     style: const TextStyle(
-                      fontSize: 12,
+                      fontSize: 13,
                       color: AppColors.textSecondary,
                       fontWeight: FontWeight.w600,
+                      height: 1.25,
                     ),
                   ),
                 ],
               ),
             ),
+            const SizedBox(width: 8),
             Icon(Icons.arrow_forward_ios_rounded, color: roleColor, size: 18),
           ],
         ),
