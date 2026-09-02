@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../models/models.dart';
 import '../../state/app_state.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/app_image.dart';
@@ -17,10 +18,29 @@ class NgoHistoryTab extends StatefulWidget {
 class _NgoHistoryTabState extends State<NgoHistoryTab> {
   String selectedFilter = 'ALL';
 
+  Color _getStatusColor(String status) {
+    final s = status.toUpperCase();
+    if (s == 'COMPLETED') return AppColors.success;
+    if (s == 'EXPIRED') return AppColors.warning;
+    if (s == 'CANCELLED') return AppColors.critical;
+    return AppColors.ngoPrimary;
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = Provider.of<AppState>(context);
-    final txns = state.transactions;
+    final allNgoTxns = state.transactions.where((t) => t.roleType == 'NGO').toList();
+
+    List<TransactionRecord> filteredTxns;
+    if (selectedFilter == 'COMPLETED') {
+      filteredTxns = allNgoTxns.where((t) => t.status.toUpperCase() == 'COMPLETED').toList();
+    } else if (selectedFilter == 'EXPIRED') {
+      filteredTxns = allNgoTxns.where((t) => t.status.toUpperCase() == 'EXPIRED').toList();
+    } else if (selectedFilter == 'CANCELLED') {
+      filteredTxns = allNgoTxns.where((t) => t.status.toUpperCase() == 'CANCELLED').toList();
+    } else {
+      filteredTxns = allNgoTxns;
+    }
 
     return SubtleBackgroundAnimation(
       role: UserRole.ngo,
@@ -43,24 +63,32 @@ class _NgoHistoryTabState extends State<NgoHistoryTab> {
                     });
                   },
                   selectedColor: AppColors.ngoPrimary,
-                  labelStyle: TextStyle(color: isSel ? Colors.white : AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 11),
+                  labelStyle: TextStyle(
+                    color: isSel ? Colors.white : AppColors.textPrimary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 11,
+                  ),
                 );
               }).toList(),
             ),
           ),
           Expanded(
-            child: txns.isEmpty
-                ? const EmptyStateWidget(
-                    title: 'No Transaction History',
-                    description: 'Your completed food recovery transactions will be recorded here.',
+            child: filteredTxns.isEmpty
+                ? EmptyStateWidget(
+                    title: 'No $selectedFilter transactions found',
+                    description: selectedFilter == 'ALL'
+                        ? 'Your food recovery transactions will be recorded here.'
+                        : 'No transactions match the $selectedFilter filter status.',
                     emoji: '📜',
                     color: AppColors.ngoPrimary,
                   )
                 : ListView.builder(
                     padding: const EdgeInsets.all(16),
-                    itemCount: txns.length,
+                    itemCount: filteredTxns.length,
                     itemBuilder: (context, index) {
-                      final txn = txns[index];
+                      final txn = filteredTxns[index];
+                      final statusColor = _getStatusColor(txn.status);
+
                       return Container(
                         margin: const EdgeInsets.only(bottom: 12),
                         padding: const EdgeInsets.all(14),
@@ -70,7 +98,7 @@ class _NgoHistoryTabState extends State<NgoHistoryTab> {
                           border: Border.all(color: AppColors.border),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.04),
+                              color: Colors.black.withValues(alpha: 0.04),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
@@ -93,7 +121,10 @@ class _NgoHistoryTabState extends State<NgoHistoryTab> {
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text('TXN #${txn.id}', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 11, color: AppColors.textSecondary)),
-                                      Text('${txn.status} ✓', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 11, color: AppColors.success)),
+                                      Text(
+                                        '${txn.status}${txn.status.toUpperCase() == "COMPLETED" ? " ✓" : ""}',
+                                        style: TextStyle(fontWeight: FontWeight.w800, fontSize: 11, color: statusColor),
+                                      ),
                                     ],
                                   ),
                                   const SizedBox(height: 4),
@@ -105,7 +136,11 @@ class _NgoHistoryTabState extends State<NgoHistoryTab> {
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Expanded(
-                                        child: Text(txn.impactSummary, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.ngoPrimary), overflow: TextOverflow.ellipsis),
+                                        child: Text(
+                                          txn.impactSummary,
+                                          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.ngoPrimary),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
                                       ),
                                       OutlinedButton(
                                         onPressed: () => TransactionDetailDialog.show(context, txn),

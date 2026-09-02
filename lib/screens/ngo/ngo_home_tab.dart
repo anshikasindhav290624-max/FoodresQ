@@ -4,7 +4,6 @@ import '../../models/models.dart';
 import '../../state/app_state.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/app_image.dart';
-import '../../widgets/metric_card.dart';
 import '../../widgets/subtle_background_animation.dart';
 import '../../widgets/trust_score_badge.dart';
 import '../../widgets/cascade_timer_widget.dart';
@@ -50,7 +49,7 @@ class NgoHomeTab extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.ngoPrimary.withOpacity(0.12),
+                    color: AppColors.ngoPrimary.withValues(alpha: 0.12),
                     blurRadius: 14,
                     offset: const Offset(0, 4),
                   ),
@@ -72,8 +71,8 @@ class NgoHomeTab extends StatelessWidget {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              AppColors.ngoPrimary.withOpacity(0.85),
-                              AppColors.ngoPrimary.withOpacity(0.35),
+                              AppColors.ngoPrimary.withValues(alpha: 0.85),
+                              AppColors.ngoPrimary.withValues(alpha: 0.35),
                             ],
                             begin: Alignment.bottomLeft,
                             end: Alignment.topRight,
@@ -91,7 +90,7 @@ class NgoHomeTab extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.25),
+                              color: Colors.white.withValues(alpha: 0.25),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: const Text(
@@ -134,7 +133,7 @@ class NgoHomeTab extends StatelessWidget {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: (isAccepting ? AppColors.ngoPrimary : Colors.grey).withOpacity(0.08),
+                    color: (isAccepting ? AppColors.ngoPrimary : Colors.grey).withValues(alpha: 0.08),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -211,27 +210,16 @@ class NgoHomeTab extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // 2. LARGE NUMERIC IMPACT METRICS CARDS
+            // 2. ENHANCED LARGE NUMERIC IMPACT METRICS CARDS (MEALS SAVED & PEOPLE SERVED)
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: MetricCard(
-                    value: '${state.totalMealsSaved}',
-                    label: 'Meals Saved',
-                    emoji: '🍱',
-                    color: AppColors.ngoPrimary,
-                    badgeText: '+12% this wk',
-                  ),
+                  child: _buildMealsSavedCard(state.totalMealsSaved),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: MetricCard(
-                    value: '${state.peopleServed}',
-                    label: 'People Served',
-                    emoji: '🤝',
-                    color: const Color(0xFF4F46A5),
-                    badgeText: 'Verified',
-                  ),
+                  child: _buildPeopleServedCard(state.peopleServed),
                 ),
               ],
             ),
@@ -255,6 +243,7 @@ class NgoHomeTab extends StatelessWidget {
                 item: state.activeCascadeItem!,
                 timerSeconds: state.cascadeTimerSeconds,
                 onAccept: () {
+                  final itemToTrack = state.activeCascadeItem!;
                   state.acceptCascadeOpportunity();
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -265,13 +254,59 @@ class NgoHomeTab extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => NgoPickupTrackingScreen(item: state.activeCascadeItem!),
+                      builder: (context) => NgoPickupTrackingScreen(item: itemToTrack),
                     ),
                   );
                 },
                 onDecline: () {
                   state.declineCascadeOpportunity();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Opportunity declined. Loading next opportunity...'),
+                      backgroundColor: AppColors.warning,
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
                 },
+              ),
+              const SizedBox(height: 16),
+            ] else ...[
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppColors.border),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.03),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: const [
+                    Icon(Icons.check_circle_outline, color: AppColors.ngoPrimary, size: 24),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'No more nearby opportunities available',
+                            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: AppColors.textPrimary),
+                          ),
+                          SizedBox(height: 2),
+                          Text(
+                            'All available surplus food opportunities in your network have been reviewed.',
+                            style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 16),
             ],
@@ -317,7 +352,7 @@ class NgoHomeTab extends StatelessWidget {
                   border: Border.all(color: AppColors.border),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
+                      color: Colors.black.withValues(alpha: 0.04),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -344,7 +379,7 @@ class NgoHomeTab extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
-                              color: AppColors.ngoPrimary.withOpacity(0.12),
+                              color: AppColors.ngoPrimary.withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -361,6 +396,194 @@ class NgoHomeTab extends StatelessWidget {
             }),
           ],
         ),
+      ),
+    );
+  }
+
+  // Specialized Rescued Food Metric Card
+  Widget _buildMealsSavedCard(int mealsSaved) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.ngoPrimary.withValues(alpha: 0.25), width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.ngoPrimary.withValues(alpha: 0.06),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 30–40% Visual Header: Rescued Prepared Meal Image + Subtle Trend Indicator
+          Stack(
+            children: [
+              SizedBox(
+                height: 75,
+                width: double.infinity,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: AppImage(
+                    url: AppImage.foodThali,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 6,
+                right: 6,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.92),
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4)],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Icon(Icons.trending_up_rounded, color: AppColors.success, size: 12),
+                      SizedBox(width: 3),
+                      Text(
+                        '+12% this wk',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.success,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+
+          // Large Number & Label Hierarchy
+          Text(
+            '$mealsSaved',
+            style: const TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.w900,
+              color: AppColors.textPrimary,
+              height: 1.0,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Row(
+            children: const [
+              Icon(Icons.set_meal_rounded, size: 14, color: AppColors.ngoPrimary),
+              SizedBox(width: 4),
+              Text(
+                'Meals Saved',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Specialized Community People Served Metric Card
+  Widget _buildPeopleServedCard(int peopleServed) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFF4F46A5).withValues(alpha: 0.25), width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF4F46A5).withValues(alpha: 0.06),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 30–40% Visual Header: Beneficiaries Community Meal Image + Verified Indicator
+          Stack(
+            children: [
+              SizedBox(
+                height: 75,
+                width: double.infinity,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: AppImage(
+                    url: AppImage.ngoCommunity,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 6,
+                right: 6,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.92),
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4)],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Icon(Icons.verified_rounded, color: Color(0xFF4F46A5), size: 12),
+                      SizedBox(width: 3),
+                      Text(
+                        'Verified',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF4F46A5),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+
+          // Large Number & Label Hierarchy
+          Text(
+            '$peopleServed',
+            style: const TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.w900,
+              color: AppColors.textPrimary,
+              height: 1.0,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Row(
+            children: const [
+              Icon(Icons.groups_rounded, size: 15, color: Color(0xFF4F46A5)),
+              SizedBox(width: 4),
+              Text(
+                'People Served',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

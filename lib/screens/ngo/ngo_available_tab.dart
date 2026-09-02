@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../models/models.dart';
 import '../../state/app_state.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/app_image.dart';
@@ -34,7 +35,8 @@ class _NgoAvailableTabState extends State<NgoAvailableTab> {
   @override
   Widget build(BuildContext context) {
     final state = Provider.of<AppState>(context);
-    var items = state.surplusItems;
+    // Filter active items only
+    var items = state.surplusItems.where((i) => i.status == 'active').toList();
 
     if (selectedFilter == '< 3 KM') {
       items = items.where((i) => i.distanceKm <= 3.0).toList();
@@ -146,7 +148,7 @@ class _NgoAvailableTabState extends State<NgoAvailableTab> {
                               border: Border.all(color: AppColors.border),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.04),
+                                  color: Colors.black.withValues(alpha: 0.04),
                                   blurRadius: 10,
                                   offset: const Offset(0, 4),
                                 ),
@@ -173,7 +175,7 @@ class _NgoAvailableTabState extends State<NgoAvailableTab> {
                                           decoration: BoxDecoration(
                                             gradient: LinearGradient(
                                               colors: [
-                                                Colors.black.withOpacity(0.6),
+                                                Colors.black.withValues(alpha: 0.6),
                                                 Colors.transparent,
                                               ],
                                               begin: Alignment.bottomCenter,
@@ -207,7 +209,7 @@ class _NgoAvailableTabState extends State<NgoAvailableTab> {
                                         child: Container(
                                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                           decoration: BoxDecoration(
-                                            color: Colors.black.withOpacity(0.7),
+                                            color: Colors.black.withValues(alpha: 0.7),
                                             borderRadius: BorderRadius.circular(8),
                                           ),
                                           child: Text(
@@ -272,27 +274,53 @@ class _NgoAvailableTabState extends State<NgoAvailableTab> {
                                         ),
                                       ),
                                       const SizedBox(height: 14),
-                                      SizedBox(
-                                        width: double.infinity,
-                                        child: ElevatedButton.icon(
-                                          onPressed: () {
-                                            state.acceptCascadeOpportunity();
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) => NgoPickupTrackingScreen(item: item),
+
+                                      // BOTH REJECT & ACCEPT BUTTONS
+                                      Row(
+                                        children: [
+                                          // REJECT BUTTON (Secondary Outlined Red Visual)
+                                          Expanded(
+                                            flex: 1,
+                                            child: OutlinedButton.icon(
+                                              onPressed: () {
+                                                _showRejectConfirmationDialog(context, state, item);
+                                              },
+                                              style: OutlinedButton.styleFrom(
+                                                foregroundColor: AppColors.critical,
+                                                side: const BorderSide(color: AppColors.critical, width: 1.5),
+                                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                                               ),
-                                            );
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: AppColors.ngoPrimary,
-                                            foregroundColor: Colors.white,
-                                            padding: const EdgeInsets.symmetric(vertical: 14),
-                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                                              icon: const Icon(Icons.close_rounded, size: 16),
+                                              label: const Text('REJECT', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 11)),
+                                            ),
                                           ),
-                                          icon: const Icon(Icons.check_circle_outline, size: 18),
-                                          label: const Text('ACCEPT & INITIATE PICKUP', style: TextStyle(fontWeight: FontWeight.w800)),
-                                        ),
+                                          const SizedBox(width: 10),
+
+                                          // ACCEPT & INITIATE PICKUP BUTTON (Primary NGO Teal Visual)
+                                          Expanded(
+                                            flex: 2,
+                                            child: ElevatedButton.icon(
+                                              onPressed: () {
+                                                state.acceptCascadeOpportunity();
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) => NgoPickupTrackingScreen(item: item),
+                                                  ),
+                                                );
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: AppColors.ngoPrimary,
+                                                foregroundColor: Colors.white,
+                                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                                              ),
+                                              icon: const Icon(Icons.check_circle_outline, size: 16),
+                                              label: const Text('ACCEPT & INITIATE PICKUP', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 11)),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
@@ -302,6 +330,40 @@ class _NgoAvailableTabState extends State<NgoAvailableTab> {
                           );
                         },
                       ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showRejectConfirmationDialog(BuildContext context, AppState state, SurplusItem item) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Reject this food donation?', style: TextStyle(fontWeight: FontWeight.w800)),
+        content: Text('Are you sure you want to reject ${item.mealsCount} meals from ${item.restaurantName}? This will move the record to history.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel', style: TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.bold)),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              state.rejectSurplusItem(item);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Donation offer rejected and moved to History.'),
+                  backgroundColor: AppColors.critical,
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.critical,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: const Text('Reject', style: TextStyle(fontWeight: FontWeight.w800, color: Colors.white)),
           ),
         ],
       ),

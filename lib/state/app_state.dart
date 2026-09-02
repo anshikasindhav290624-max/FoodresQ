@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../models/models.dart';
 import '../theme/app_theme.dart';
+import '../widgets/app_image.dart';
 
 class AppState extends ChangeNotifier {
   UserRole _activeRole = UserRole.ngo;
@@ -43,6 +44,53 @@ class AppState extends ChangeNotifier {
   double get foodDivertedKg => _foodDivertedKg;
   int _successfulPickups = 248;
   int get successfulPickups => _successfulPickups;
+
+  // NGO Profile State
+  String _ngoName = 'Helping Hands Foundation';
+  String get ngoName => _ngoName;
+
+  String _ngoRegNumber = 'NGO-KAR-2024-8849';
+  String get ngoRegNumber => _ngoRegNumber;
+
+  String _ngoLocation = 'Koramangala, Bengaluru';
+  String get ngoLocation => _ngoLocation;
+
+  String _ngoContactPerson = 'Rahul Sharma';
+  String get ngoContactPerson => _ngoContactPerson;
+
+  String _ngoPhone = '+91 98765 43210';
+  String get ngoPhone => _ngoPhone;
+
+  String _ngoEmail = 'contact@helpinghandsngo.org';
+  String get ngoEmail => _ngoEmail;
+
+  String _ngoAvatarUrl = AppImage.ngoCommunity;
+  String get ngoAvatarUrl => _ngoAvatarUrl;
+
+  String _ngoCoverUrl = AppImage.ngoCommunity;
+  String get ngoCoverUrl => _ngoCoverUrl;
+
+  void updateNgoProfile({
+    String? name,
+    String? regNumber,
+    String? location,
+    String? contactPerson,
+    String? phone,
+    String? email,
+    String? avatarUrl,
+    String? coverUrl,
+  }) {
+    if (name != null && name.isNotEmpty) _ngoName = name;
+    if (regNumber != null && regNumber.isNotEmpty) _ngoRegNumber = regNumber;
+    if (location != null && location.isNotEmpty) _ngoLocation = location;
+    if (contactPerson != null && contactPerson.isNotEmpty) _ngoContactPerson = contactPerson;
+    if (phone != null && phone.isNotEmpty) _ngoPhone = phone;
+    if (email != null && email.isNotEmpty) _ngoEmail = email;
+    if (avatarUrl != null && avatarUrl.isNotEmpty) _ngoAvatarUrl = avatarUrl;
+    if (coverUrl != null && coverUrl.isNotEmpty) _ngoCoverUrl = coverUrl;
+
+    notifyListeners();
+  }
 
   // Restaurant Analytics Stats
   double _restaurantRevenueToday = 4250.0;
@@ -276,6 +324,43 @@ class AppState extends ChangeNotifier {
         ],
       ),
       TransactionRecord(
+        id: 'TXN10479',
+        timestamp: DateTime.now().subtract(const Duration(days: 1)),
+        itemTitle: '20 Meals (Bakery & Pastries Batch)',
+        quantityStr: '20 Meals',
+        roleType: 'NGO',
+        originalValue: 2400.0,
+        finalValue: 0.0,
+        savedValue: 0.0,
+        status: 'EXPIRED',
+        participant1: 'Bakers Delight',
+        participant2: 'Helping Hands Foundation',
+        impactSummary: '8-minute cascade acceptance window expired',
+        timeline: [
+          TransactionStep(title: 'Food Posted by Bakers Delight', timestamp: 'Yesterday 14:00', isCompleted: true),
+          TransactionStep(title: 'Cascade Window Expired', timestamp: 'Yesterday 14:08', isCompleted: false),
+        ],
+      ),
+      TransactionRecord(
+        id: 'TXN10478',
+        timestamp: DateTime.now().subtract(const Duration(days: 2)),
+        itemTitle: '15 Meals (Rice & Gravy Combo)',
+        quantityStr: '15 Meals',
+        roleType: 'NGO',
+        originalValue: 1800.0,
+        finalValue: 0.0,
+        savedValue: 0.0,
+        status: 'CANCELLED',
+        participant1: 'Curry House',
+        participant2: 'Helping Hands Foundation',
+        impactSummary: 'Pickup cancelled due to severe weather conditions',
+        timeline: [
+          TransactionStep(title: 'Food Posted by Curry House', timestamp: '2 days ago', isCompleted: true),
+          TransactionStep(title: 'NGO Accepted', timestamp: '2 days ago', isCompleted: true),
+          TransactionStep(title: 'Pickup Cancelled', timestamp: '2 days ago', isCompleted: false),
+        ],
+      ),
+      TransactionRecord(
         id: 'TXN10481',
         timestamp: DateTime.now().subtract(const Duration(hours: 6)),
         itemTitle: '50 kg Organic Tomatoes Batch',
@@ -333,10 +418,22 @@ class AppState extends ChangeNotifier {
     _startDemoCascade(_surplusItems.first);
   }
 
+  // Track declined cascade items for current NGO session
+  final Set<String> _declinedCascadeItemIds = {};
+
+  SurplusItem? _findNextActiveCascadeItem() {
+    for (final item in _surplusItems) {
+      if (item.status == 'active' && !_declinedCascadeItemIds.contains(item.id)) {
+        return item;
+      }
+    }
+    return null;
+  }
+
   // 8-Minute Cascade Engine
   void _startDemoCascade(SurplusItem item) {
     _activeCascadeItem = item;
-    _cascadeTimerSeconds = 480; // 8 minutes
+    _cascadeTimerSeconds = 480; // 8 minutes fresh countdown
     _isCascadeActive = true;
 
     _timer?.cancel();
@@ -348,30 +445,38 @@ class AppState extends ChangeNotifier {
         _cascadeTimeout();
       }
     });
+    notifyListeners();
   }
 
   void _cascadeTimeout() {
     _timer?.cancel();
-    _isCascadeActive = false;
     if (_activeCascadeItem != null) {
+      _declinedCascadeItemIds.add(_activeCascadeItem!.id);
       _notifications.insert(
         0,
         NotificationModel(
           id: 'NOTIF-EXPIRE-${DateTime.now().millisecondsSinceEpoch}',
           title: '⏱ 8-Minute Window Expired',
-          message: 'Acceptance window expired for ${_activeCascadeItem!.title}. Cascading to next highest-ranked NGO (Seva Meals Trust)...',
+          message: 'Acceptance window expired for ${_activeCascadeItem!.title}. Cascading to next available opportunity...',
           timestamp: DateTime.now(),
           targetRole: 'NGO',
         ),
       );
     }
-    notifyListeners();
+
+    final nextOpp = _findNextActiveCascadeItem();
+    if (nextOpp != null) {
+      _startDemoCascade(nextOpp);
+    } else {
+      _isCascadeActive = false;
+      _activeCascadeItem = null;
+      notifyListeners();
+    }
   }
 
   void acceptCascadeOpportunity() {
     if (_activeCascadeItem == null) return;
     _timer?.cancel();
-    _isCascadeActive = false;
 
     _activeCascadeItem!.status = 'accepted';
     _activeCascadeItem!.acceptedByNgo = 'Helping Hands Foundation';
@@ -388,20 +493,74 @@ class AppState extends ChangeNotifier {
       ),
     );
 
-    notifyListeners();
+    final nextOpp = _findNextActiveCascadeItem();
+    if (nextOpp != null) {
+      _startDemoCascade(nextOpp);
+    } else {
+      _isCascadeActive = false;
+      _activeCascadeItem = null;
+      notifyListeners();
+    }
   }
 
   void declineCascadeOpportunity() {
     if (_activeCascadeItem == null) return;
+    final declinedTitle = _activeCascadeItem!.title;
+    _declinedCascadeItemIds.add(_activeCascadeItem!.id);
+
     _timer?.cancel();
-    _isCascadeActive = false;
 
     _notifications.insert(
       0,
       NotificationModel(
         id: 'NOTIF-DECLINE-${DateTime.now().millisecondsSinceEpoch}',
         title: 'Opportunity Declined',
-        message: 'Cascaded opportunity to next best matching NGO in network.',
+        message: 'Declined $declinedTitle. Cascaded opportunity to next best matching NGO opportunity in network.',
+        timestamp: DateTime.now(),
+        targetRole: 'NGO',
+      ),
+    );
+
+    final nextOpp = _findNextActiveCascadeItem();
+    if (nextOpp != null) {
+      _startDemoCascade(nextOpp);
+    } else {
+      _isCascadeActive = false;
+      _activeCascadeItem = null;
+      notifyListeners();
+    }
+  }
+
+  void rejectSurplusItem(SurplusItem item) {
+    item.status = 'rejected';
+
+    final newTxn = TransactionRecord(
+      id: 'TXN${10483 + _transactions.length}',
+      timestamp: DateTime.now(),
+      itemTitle: '${item.mealsCount} Meals (${item.title})',
+      quantityStr: '${item.mealsCount} Meals',
+      roleType: 'NGO',
+      originalValue: item.mealsCount * 120.0,
+      finalValue: 0.0,
+      savedValue: 0.0,
+      status: 'CANCELLED',
+      participant1: item.restaurantName,
+      participant2: 'Helping Hands Foundation',
+      impactSummary: 'Donation offer rejected by NGO',
+      timeline: [
+        TransactionStep(title: 'Food Posted by ${item.restaurantName}', timestamp: 'Just now', isCompleted: true),
+        TransactionStep(title: 'Donation Rejected by NGO', timestamp: 'Just now', isCompleted: false),
+      ],
+    );
+
+    _transactions.insert(0, newTxn);
+
+    _notifications.insert(
+      0,
+      NotificationModel(
+        id: 'NOTIF-REJECT-${DateTime.now().millisecondsSinceEpoch}',
+        title: 'Donation Offer Rejected',
+        message: 'You rejected ${item.mealsCount} meals from ${item.restaurantName}. Recorded in history.',
         timestamp: DateTime.now(),
         targetRole: 'NGO',
       ),
