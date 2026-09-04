@@ -115,6 +115,60 @@ class AppState extends ChangeNotifier {
   double get kiranaPotentialLoss => _kiranaPotentialLoss;
   int _kiranaExpiringProducts = 12;
   int get kiranaExpiringProducts => _kiranaExpiringProducts;
+  final int _kiranaWastePreventedKg = 86;
+  int get kiranaWastePreventedKg => _kiranaWastePreventedKg;
+  final double _kiranaNearExpirySales = 6400.0;
+  double get kiranaNearExpirySales => _kiranaNearExpirySales;
+  final int _kiranaInventoryLossReduction = 23;
+  int get kiranaInventoryLossReduction => _kiranaInventoryLossReduction;
+
+  // Kirana Profile State
+  String _kiranaName = 'Sharma General Store';
+  String get kiranaName => _kiranaName;
+
+  String _kiranaOwnerName = 'Ramesh Sharma';
+  String get kiranaOwnerName => _kiranaOwnerName;
+
+  String _kiranaLocation = 'Indiranagar, Bengaluru';
+  String get kiranaLocation => _kiranaLocation;
+
+  String _kiranaRegNumber = 'KIR-KA-2024-5519';
+  String get kiranaRegNumber => _kiranaRegNumber;
+
+  String _kiranaPhone = '+91 98450 12345';
+  String get kiranaPhone => _kiranaPhone;
+
+  String _kiranaEmail = 'sharma.store@foodresq.in';
+  String get kiranaEmail => _kiranaEmail;
+
+  String _kiranaAvatarUrl = AppImage.kiranaStore;
+  String get kiranaAvatarUrl => _kiranaAvatarUrl;
+
+  String _kiranaCoverUrl = AppImage.kiranaStore;
+  String get kiranaCoverUrl => _kiranaCoverUrl;
+
+  void updateKiranaProfile({
+    String? name,
+    String? ownerName,
+    String? location,
+    String? regNumber,
+    String? phone,
+    String? email,
+    String? avatarUrl,
+    String? coverUrl,
+  }) {
+    if (name != null && name.isNotEmpty) _kiranaName = name;
+    if (ownerName != null && ownerName.isNotEmpty) _kiranaOwnerName = ownerName;
+    if (location != null && location.isNotEmpty) _kiranaLocation = location;
+    if (regNumber != null && regNumber.isNotEmpty) _kiranaRegNumber = regNumber;
+    if (phone != null && phone.isNotEmpty) _kiranaPhone = phone;
+    if (email != null && email.isNotEmpty) _kiranaEmail = email;
+    if (avatarUrl != null && avatarUrl.isNotEmpty) _kiranaAvatarUrl = avatarUrl;
+    if (coverUrl != null && coverUrl.isNotEmpty) _kiranaCoverUrl = coverUrl;
+
+    notifyListeners();
+  }
+
 
   // Lists
   final List<SurplusItem> _surplusItems = [];
