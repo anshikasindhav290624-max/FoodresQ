@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../state/app_state.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/app_image.dart';
+import '../../widgets/profile_support_widgets.dart';
 import '../../widgets/subtle_background_animation.dart';
 import '../../widgets/trust_score_badge.dart';
 import '../welcome_screen.dart';
@@ -19,39 +20,40 @@ class _NgoProfileTabState extends State<NgoProfileTab> {
   @override
   Widget build(BuildContext context) {
     final state = Provider.of<AppState>(context);
+    const primaryColor = AppColors.ngoPrimary;
 
     return SubtleBackgroundAnimation(
       role: UserRole.ngo,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Cover Photo & Profile Avatar Header Card with Photo Edit Triggers
+            // 1. PROFILE HEADER CARD (Cover + Circular Avatar + Edit Button)
             Container(
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(22),
                 border: Border.all(color: AppColors.border),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
-                    blurRadius: 10,
+                    color: primaryColor.withOpacity(0.08),
+                    blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
                 ],
               ),
               child: Column(
                 children: [
-                  // Cover Image with Change Cover Button
+                  // Cover Image with Camera Edit Overlay
                   SizedBox(
-                    height: 110,
+                    height: 125,
                     width: double.infinity,
                     child: Stack(
                       children: [
                         Positioned.fill(
                           child: ClipRRect(
-                            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                            borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
                             child: AppImage(
                               url: state.ngoCoverUrl,
                               borderRadius: 0,
@@ -63,7 +65,7 @@ class _NgoProfileTabState extends State<NgoProfileTab> {
                           child: Container(
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
-                                colors: [Colors.black.withValues(alpha: 0.4), Colors.transparent],
+                                colors: [Colors.black.withOpacity(0.55), Colors.transparent],
                                 begin: Alignment.bottomCenter,
                                 end: Alignment.topCenter,
                               ),
@@ -71,26 +73,32 @@ class _NgoProfileTabState extends State<NgoProfileTab> {
                           ),
                         ),
                         Positioned(
-                          top: 10,
-                          right: 10,
+                          top: 12,
+                          right: 12,
                           child: InkWell(
-                            onTap: () => _showPhotoPickerDialog(context, state, isCover: true),
+                            onTap: () => PhotoPickerDialog.show(
+                              context,
+                              role: UserRole.ngo,
+                              isCover: true,
+                              currentUrl: state.ngoCoverUrl,
+                              onSelected: (url) => state.updateNgoProfile(coverUrl: url),
+                            ),
                             borderRadius: BorderRadius.circular(12),
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                               decoration: BoxDecoration(
-                                color: Colors.black.withValues(alpha: 0.65),
+                                color: Colors.black.withOpacity(0.65),
                                 borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: Colors.white24),
+                                border: Border.all(color: Colors.white30),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: const [
-                                  Icon(Icons.camera_alt, color: Colors.white, size: 13),
-                                  SizedBox(width: 4),
+                                  Icon(Icons.camera_alt, color: Colors.white, size: 14),
+                                  SizedBox(width: 5),
                                   Text(
                                     'Edit Cover',
-                                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white),
+                                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white),
                                   ),
                                 ],
                               ),
@@ -101,28 +109,34 @@ class _NgoProfileTabState extends State<NgoProfileTab> {
                     ),
                   ),
 
-                  // Avatar & Profile Title Header
+                  // Avatar, Titles & Edit Profile Details
                   Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       children: [
                         Row(
                           children: [
-                            // Avatar Photo with Edit Overlay
+                            // Circular Profile Image with Camera overlay
                             GestureDetector(
-                              onTap: () => _showPhotoPickerDialog(context, state, isCover: false),
+                              onTap: () => PhotoPickerDialog.show(
+                                context,
+                                role: UserRole.ngo,
+                                isCover: false,
+                                currentUrl: state.ngoAvatarUrl,
+                                onSelected: (url) => state.updateNgoProfile(avatarUrl: url),
+                              ),
                               child: Stack(
                                 children: [
                                   Container(
-                                    width: 68,
-                                    height: 68,
+                                    width: 72,
+                                    height: 72,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       border: Border.all(color: Colors.white, width: 3),
-                                      boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 6)],
+                                      boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 8)],
                                     ),
                                     child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(34),
+                                      borderRadius: BorderRadius.circular(36),
                                       child: AppImage(
                                         url: state.ngoAvatarUrl,
                                         fit: BoxFit.cover,
@@ -135,11 +149,11 @@ class _NgoProfileTabState extends State<NgoProfileTab> {
                                     child: Container(
                                       padding: const EdgeInsets.all(5),
                                       decoration: BoxDecoration(
-                                        color: AppColors.ngoPrimary,
+                                        color: primaryColor,
                                         shape: BoxShape.circle,
-                                        border: Border.all(color: Colors.white, width: 1.5),
+                                        border: Border.all(color: Colors.white, width: 2),
                                       ),
-                                      child: const Icon(Icons.edit, color: Colors.white, size: 12),
+                                      child: const Icon(Icons.camera_alt, color: Colors.white, size: 13),
                                     ),
                                   ),
                                 ],
@@ -161,7 +175,7 @@ class _NgoProfileTabState extends State<NgoProfileTab> {
                                         ),
                                       ),
                                       const SizedBox(width: 4),
-                                      const Icon(Icons.verified, color: AppColors.ngoPrimary, size: 18),
+                                      const Icon(Icons.verified, color: primaryColor, size: 18),
                                     ],
                                   ),
                                   const SizedBox(height: 2),
@@ -171,7 +185,9 @@ class _NgoProfileTabState extends State<NgoProfileTab> {
                                   ),
                                   Text(
                                     state.ngoLocation,
-                                    style: const TextStyle(fontSize: 12, color: AppColors.textSecondary, fontWeight: FontWeight.w600),
+                                    style: const TextStyle(fontSize: 12, color: AppColors.textSecondary, fontWeight: FontWeight.w500),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ],
                               ),
@@ -180,21 +196,21 @@ class _NgoProfileTabState extends State<NgoProfileTab> {
                         ),
                         const SizedBox(height: 14),
 
-                        // Prominent Edit Profile Details Button
+                        // Prominent EDIT PROFILE DETAILS Button
                         SizedBox(
                           width: double.infinity,
                           child: OutlinedButton.icon(
-                            onPressed: () => _showEditProfileDialog(context, state),
+                            onPressed: () => _showEditNgoModal(context, state),
                             style: OutlinedButton.styleFrom(
-                              foregroundColor: AppColors.ngoPrimary,
-                              side: const BorderSide(color: AppColors.ngoPrimary, width: 1.5),
-                              padding: const EdgeInsets.symmetric(vertical: 10),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              foregroundColor: primaryColor,
+                              side: const BorderSide(color: primaryColor, width: 1.6),
+                              padding: const EdgeInsets.symmetric(vertical: 11),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                             ),
-                            icon: const Icon(Icons.edit_note_rounded, size: 18),
+                            icon: const Icon(Icons.edit_note_rounded, size: 20),
                             label: const Text(
                               'EDIT PROFILE DETAILS',
-                              style: TextStyle(fontWeight: FontWeight.w800, fontSize: 12, letterSpacing: 0.5),
+                              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12.5, letterSpacing: 0.6),
                             ),
                           ),
                         ),
@@ -204,18 +220,41 @@ class _NgoProfileTabState extends State<NgoProfileTab> {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
 
-            // Detailed NGO Profile Information Card
+            // 2. QUICK IMPACT STATS ROW (Preserved NGO data)
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: AppColors.border),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildQuickStat('${state.totalMealsSaved}', 'Meals Saved', primaryColor),
+                  _buildStatDivider(),
+                  _buildQuickStat('${state.peopleServed}', 'People Fed', AppColors.success),
+                  _buildStatDivider(),
+                  _buildQuickStat('${state.foodDivertedKg.toStringAsFixed(0)} kg', 'Diverted', AppColors.warning),
+                  _buildStatDivider(),
+                  _buildQuickStat('${state.successfulPickups}', 'Pickups Done', const Color(0xFF4F46A5)),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // 3. NGO ORGANIZATION DETAILS CARD (With individual row edit actions)
             Container(
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(22),
                 border: Border.all(color: AppColors.border),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.03),
+                    color: Colors.black.withOpacity(0.03),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -227,181 +266,348 @@ class _NgoProfileTabState extends State<NgoProfileTab> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'NGO Organization Details',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: AppColors.textPrimary),
+                      Row(
+                        children: const [
+                          Icon(Icons.volunteer_activism_rounded, color: primaryColor, size: 20),
+                          SizedBox(width: 8),
+                          Text(
+                            'NGO Organization Details',
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: AppColors.textPrimary),
+                          ),
+                        ],
                       ),
                       IconButton(
-                        onPressed: () => _showEditProfileDialog(context, state),
-                        icon: const Icon(Icons.edit_outlined, color: AppColors.ngoPrimary, size: 20),
-                        tooltip: 'Edit Information',
+                        onPressed: () => _showEditNgoModal(context, state),
+                        icon: const Icon(Icons.edit_outlined, color: primaryColor, size: 20),
+                        tooltip: 'Edit All Information',
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
-                  _buildDetailTile(Icons.business_rounded, 'NGO Name', state.ngoName),
-                  const Divider(height: 16),
-                  _buildDetailTile(Icons.app_registration_rounded, 'Registration Number', state.ngoRegNumber),
-                  const Divider(height: 16),
-                  _buildDetailTile(Icons.location_on_outlined, 'Address / Location', state.ngoLocation),
-                  const Divider(height: 16),
-                  _buildDetailTile(Icons.person_outline_rounded, 'Contact Person', state.ngoContactPerson),
-                  const Divider(height: 16),
-                  _buildDetailTile(Icons.phone_outlined, 'Phone Number', state.ngoPhone),
-                  const Divider(height: 16),
-                  _buildDetailTile(Icons.email_outlined, 'Email Address', state.ngoEmail),
+                  const SizedBox(height: 8),
+                  ProfileDetailTile(
+                    icon: Icons.business_rounded,
+                    label: 'NGO Name',
+                    value: state.ngoName,
+                    primaryColor: primaryColor,
+                    onEdit: () => _showEditNgoModal(context, state, focusField: 'name'),
+                  ),
+                  const Divider(height: 12),
+                  ProfileDetailTile(
+                    icon: Icons.app_registration_rounded,
+                    label: 'Registration Number',
+                    value: state.ngoRegNumber,
+                    primaryColor: primaryColor,
+                    onEdit: () => _showEditNgoModal(context, state, focusField: 'regNumber'),
+                  ),
+                  const Divider(height: 12),
+                  ProfileDetailTile(
+                    icon: Icons.location_on_outlined,
+                    label: 'Address / Location',
+                    value: state.ngoLocation,
+                    primaryColor: primaryColor,
+                    onEdit: () => _showEditNgoModal(context, state, focusField: 'location'),
+                  ),
+                  const Divider(height: 12),
+                  ProfileDetailTile(
+                    icon: Icons.person_outline_rounded,
+                    label: 'Contact Person / Coordinator',
+                    value: state.ngoContactPerson,
+                    primaryColor: primaryColor,
+                    onEdit: () => _showEditNgoModal(context, state, focusField: 'contactPerson'),
+                  ),
+                  const Divider(height: 12),
+                  ProfileDetailTile(
+                    icon: Icons.phone_outlined,
+                    label: 'Phone Number',
+                    value: state.ngoPhone,
+                    primaryColor: primaryColor,
+                    onEdit: () => _showEditNgoModal(context, state, focusField: 'phone'),
+                  ),
+                  const Divider(height: 12),
+                  ProfileDetailTile(
+                    icon: Icons.email_outlined,
+                    label: 'Email Address',
+                    value: state.ngoEmail,
+                    primaryColor: primaryColor,
+                    onEdit: () => _showEditNgoModal(context, state, focusField: 'email'),
+                  ),
+                  const Divider(height: 12),
+                  ProfileDetailTile(
+                    icon: Icons.map_outlined,
+                    label: 'Service Area / Coverage',
+                    value: state.ngoServiceArea,
+                    primaryColor: primaryColor,
+                    onEdit: () => _showEditNgoModal(context, state, focusField: 'serviceArea'),
+                  ),
+                  const Divider(height: 12),
+                  ProfileDetailTile(
+                    icon: Icons.groups_rounded,
+                    label: 'Beneficiary Capacity',
+                    value: state.ngoBeneficiaryCapacity,
+                    primaryColor: primaryColor,
+                    onEdit: () => _showEditNgoModal(context, state, focusField: 'capacity'),
+                  ),
+                  const Divider(height: 12),
+                  ProfileDetailTile(
+                    icon: Icons.local_shipping_outlined,
+                    label: 'Food Pickup Availability',
+                    value: state.ngoPickupAvailability,
+                    primaryColor: primaryColor,
+                    onEdit: () => _showEditNgoModal(context, state, focusField: 'pickup'),
+                  ),
+                  const Divider(height: 12),
+                  ProfileDetailTile(
+                    icon: Icons.access_time_rounded,
+                    label: 'Operating Hours',
+                    value: state.ngoOperatingHours,
+                    primaryColor: primaryColor,
+                    onEdit: () => _showEditNgoModal(context, state, focusField: 'hours'),
+                  ),
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
 
-            // Trust Score Card
+            // 4. TRUST SCORE CARD
             TrustScoreBadge(
               trustScore: state.trustScore,
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => const NgoTrustScoreScreen()));
               },
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
 
-            // Settings & Log Out List
+            // 5. NOTIFICATIONS, SUPPORT & UTILITIES MENU
             Container(
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(22),
                 border: Border.all(color: AppColors.border),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Column(
                 children: [
                   ListTile(
-                    leading: const Icon(Icons.logout_rounded, color: AppColors.critical),
-                    title: const Text('Log Out', style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.critical)),
-                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                    onTap: () {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (context) => const FoodresQWelcomeScreen()),
-                        (route) => false,
-                      );
-                    },
+                    leading: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(color: primaryColor.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                      child: const Icon(Icons.notifications_active_outlined, color: primaryColor, size: 20),
+                    ),
+                    title: const Text('Notifications & Alerts', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
+                    subtitle: const Text('Surplus signals, rescue alarms & route clusters', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                    trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 15, color: AppColors.textSecondary),
+                    onTap: () => NotificationsModal.show(context, UserRole.ngo),
                   ),
                   const Divider(height: 1),
-                  const ListTile(
-                    leading: Icon(Icons.notifications_outlined, color: AppColors.textPrimary),
-                    title: Text('Notification Preferences'),
-                    trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                  ListTile(
+                    leading: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(color: AppColors.success.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                      child: const Icon(Icons.verified_user_outlined, color: AppColors.success, size: 20),
+                    ),
+                    title: const Text('Verification & Trust Documents', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
+                    subtitle: const Text('NGO Darpan registration, 80G tax certificate, Trust Deed', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                    trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 15, color: AppColors.textSecondary),
+                    onTap: () => VerificationDocumentsModal.show(context, UserRole.ngo),
                   ),
                   const Divider(height: 1),
-                  const ListTile(
-                    leading: Icon(Icons.help_outline, color: AppColors.textPrimary),
-                    title: Text('Help & Support'),
-                    trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                  ListTile(
+                    leading: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(color: AppColors.aiAccent.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                      child: const Icon(Icons.help_center_outlined, color: AppColors.aiAccent, size: 20),
+                    ),
+                    title: const Text('Partner Support & FAQs', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
+                    subtitle: const Text('Meal claim standards, cold-chain guidelines & ratings', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                    trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 15, color: AppColors.textSecondary),
+                    onTap: () => SupportFaqModal.show(context, UserRole.ngo),
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
+                    leading: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(color: AppColors.info.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                      child: const Icon(Icons.support_agent_rounded, color: AppColors.info, size: 20),
+                    ),
+                    title: const Text('Call Assistance', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
+                    subtitle: const Text('24/7 priority NGO dispatch desk & callback', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                    trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 15, color: AppColors.textSecondary),
+                    onTap: () => CallAssistanceModal.show(context, UserRole.ngo),
                   ),
                 ],
               ),
             ),
+            const SizedBox(height: 16),
+
+            // 6. LOG OUT ACTION
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: AppColors.critical.withOpacity(0.25)),
+              ),
+              child: ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(color: AppColors.critical.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                  child: const Icon(Icons.logout_rounded, color: AppColors.critical, size: 20),
+                ),
+                title: const Text('Log Out', style: TextStyle(fontWeight: FontWeight.w900, color: AppColors.critical)),
+                subtitle: const Text('Sign out of Helping Hands NGO portal', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 15, color: AppColors.critical),
+                onTap: () {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const FoodresQWelcomeScreen()),
+                    (route) => false,
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 24),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildDetailTile(IconData icon, String label, String value) {
-    return Row(
+  Widget _buildQuickStat(String val, String label, Color color) {
+    return Column(
       children: [
-        Icon(icon, color: AppColors.ngoPrimary, size: 20),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(label, style: const TextStyle(fontSize: 10, color: AppColors.textSecondary, fontWeight: FontWeight.w600)),
-              const SizedBox(height: 2),
-              Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
-            ],
-          ),
-        ),
+        Text(val, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: color)),
+        const SizedBox(height: 3),
+        Text(label, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppColors.textSecondary)),
       ],
     );
   }
 
-  // EDIT PROFILE DETAILS DIALOG (FORM WITH SAVE & CANCEL)
-  void _showEditProfileDialog(BuildContext context, AppState state) {
-    final nameController = TextEditingController(text: state.ngoName);
-    final regController = TextEditingController(text: state.ngoRegNumber);
-    final locationController = TextEditingController(text: state.ngoLocation);
-    final contactController = TextEditingController(text: state.ngoContactPerson);
-    final phoneController = TextEditingController(text: state.ngoPhone);
-    final emailController = TextEditingController(text: state.ngoEmail);
+  Widget _buildStatDivider() {
+    return Container(height: 26, width: 1, color: AppColors.border);
+  }
+
+  // EDIT NGO PROFILE MODAL
+  void _showEditNgoModal(BuildContext context, AppState state, {String? focusField}) {
+    final nameCtrl = TextEditingController(text: state.ngoName);
+    final regCtrl = TextEditingController(text: state.ngoRegNumber);
+    final locationCtrl = TextEditingController(text: state.ngoLocation);
+    final contactCtrl = TextEditingController(text: state.ngoContactPerson);
+    final phoneCtrl = TextEditingController(text: state.ngoPhone);
+    final emailCtrl = TextEditingController(text: state.ngoEmail);
+    final areaCtrl = TextEditingController(text: state.ngoServiceArea);
+    final capacityCtrl = TextEditingController(text: state.ngoBeneficiaryCapacity);
+    final pickupCtrl = TextEditingController(text: state.ngoPickupAvailability);
+    final hoursCtrl = TextEditingController(text: state.ngoOperatingHours);
 
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
         title: Row(
           children: const [
-            Icon(Icons.edit_rounded, color: AppColors.ngoPrimary),
+            Icon(Icons.edit_note_rounded, color: AppColors.ngoPrimary, size: 26),
             SizedBox(width: 8),
             Text('Edit NGO Profile', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
           ],
         ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(labelText: 'NGO Name', prefixIcon: Icon(Icons.business_rounded, size: 20)),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: regController,
-                decoration: const InputDecoration(labelText: 'Registration Number', prefixIcon: Icon(Icons.app_registration_rounded, size: 20)),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: locationController,
-                decoration: const InputDecoration(labelText: 'Address / Location', prefixIcon: Icon(Icons.location_on_outlined, size: 20)),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: contactController,
-                decoration: const InputDecoration(labelText: 'Contact Person', prefixIcon: Icon(Icons.person_outline_rounded, size: 20)),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: phoneController,
-                decoration: const InputDecoration(labelText: 'Phone Number', prefixIcon: Icon(Icons.phone_outlined, size: 20)),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: emailController,
-                decoration: const InputDecoration(labelText: 'Email Address', prefixIcon: Icon(Icons.email_outlined, size: 20)),
-              ),
-            ],
+        content: SizedBox(
+          width: 400,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameCtrl,
+                  autofocus: focusField == 'name',
+                  decoration: const InputDecoration(labelText: 'NGO Name', prefixIcon: Icon(Icons.business_rounded, size: 18)),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: regCtrl,
+                  autofocus: focusField == 'regNumber',
+                  decoration: const InputDecoration(labelText: 'Registration Number', prefixIcon: Icon(Icons.app_registration_rounded, size: 18)),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: locationCtrl,
+                  autofocus: focusField == 'location',
+                  decoration: const InputDecoration(labelText: 'Address / Location', prefixIcon: Icon(Icons.location_on_outlined, size: 18)),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: contactCtrl,
+                  autofocus: focusField == 'contactPerson',
+                  decoration: const InputDecoration(labelText: 'Contact Person / Coordinator', prefixIcon: Icon(Icons.person_outline_rounded, size: 18)),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: phoneCtrl,
+                  autofocus: focusField == 'phone',
+                  keyboardType: TextInputType.phone,
+                  decoration: const InputDecoration(labelText: 'Phone Number', prefixIcon: Icon(Icons.phone_outlined, size: 18)),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: emailCtrl,
+                  autofocus: focusField == 'email',
+                  decoration: const InputDecoration(labelText: 'Email Address', prefixIcon: Icon(Icons.email_outlined, size: 18)),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: areaCtrl,
+                  autofocus: focusField == 'serviceArea',
+                  decoration: const InputDecoration(labelText: 'Service Area / Coverage', prefixIcon: Icon(Icons.map_outlined, size: 18)),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: capacityCtrl,
+                  autofocus: focusField == 'capacity',
+                  decoration: const InputDecoration(labelText: 'Beneficiary Capacity', prefixIcon: Icon(Icons.groups_rounded, size: 18)),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: pickupCtrl,
+                  autofocus: focusField == 'pickup',
+                  decoration: const InputDecoration(labelText: 'Pickup Availability', prefixIcon: Icon(Icons.local_shipping_outlined, size: 18)),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: hoursCtrl,
+                  autofocus: focusField == 'hours',
+                  decoration: const InputDecoration(labelText: 'Operating Hours', prefixIcon: Icon(Icons.access_time_rounded, size: 18)),
+                ),
+              ],
+            ),
           ),
         ),
         actions: [
-          // CANCEL BUTTON (Discards unsaved edits)
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: const Text('Cancel', style: TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.bold)),
           ),
-          // SAVE BUTTON (Updates state immediately)
           ElevatedButton(
             onPressed: () {
               state.updateNgoProfile(
-                name: nameController.text.trim(),
-                regNumber: regController.text.trim(),
-                location: locationController.text.trim(),
-                contactPerson: contactController.text.trim(),
-                phone: phoneController.text.trim(),
-                email: emailController.text.trim(),
+                name: nameCtrl.text.trim(),
+                regNumber: regCtrl.text.trim(),
+                location: locationCtrl.text.trim(),
+                contactPerson: contactCtrl.text.trim(),
+                phone: phoneCtrl.text.trim(),
+                email: emailCtrl.text.trim(),
+                serviceArea: areaCtrl.text.trim(),
+                beneficiaryCapacity: capacityCtrl.text.trim(),
+                pickupAvailability: pickupCtrl.text.trim(),
+                operatingHours: hoursCtrl.text.trim(),
               );
               Navigator.pop(ctx);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('NGO Profile details updated successfully!'),
+                  content: Text('NGO profile updated successfully!'),
                   backgroundColor: AppColors.ngoPrimary,
                 ),
               );
@@ -409,125 +615,9 @@ class _NgoProfileTabState extends State<NgoProfileTab> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.ngoPrimary,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
             ),
-            child: const Text('Save Changes', style: TextStyle(fontWeight: FontWeight.w800, color: Colors.white)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // EDIT PROFILE / COVER PHOTO PICKER DIALOG
-  void _showPhotoPickerDialog(BuildContext context, AppState state, {required bool isCover}) {
-    final customUrlController = TextEditingController();
-
-    final presets = [
-      AppImage.ngoCommunity,
-      AppImage.foodThali,
-      AppImage.restaurantKitchen,
-      AppImage.vendorWholesale,
-    ];
-
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Row(
-          children: [
-            const Icon(Icons.camera_alt_rounded, color: AppColors.ngoPrimary),
-            const SizedBox(width: 8),
-            Text(
-              isCover ? 'Change Cover Photo' : 'Change Profile Photo',
-              style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
-            ),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Select from preset imagery:',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textSecondary),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: presets.map((url) {
-                return InkWell(
-                  onTap: () {
-                    if (isCover) {
-                      state.updateNgoProfile(coverUrl: url);
-                    } else {
-                      state.updateNgoProfile(avatarUrl: url);
-                    }
-                    Navigator.pop(ctx);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('${isCover ? "Cover" : "Profile"} photo updated!'),
-                        backgroundColor: AppColors.ngoPrimary,
-                      ),
-                    );
-                  },
-                  borderRadius: BorderRadius.circular(12),
-                  child: Container(
-                    width: 54,
-                    height: 54,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColors.border, width: 2),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: AppImage(url: url, fit: BoxFit.cover),
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Or enter image URL:',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textSecondary),
-            ),
-            const SizedBox(height: 6),
-            TextField(
-              controller: customUrlController,
-              decoration: const InputDecoration(
-                hintText: 'https://images.unsplash.com/...',
-                prefixIcon: Icon(Icons.link, size: 18),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel', style: TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.bold)),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final customUrl = customUrlController.text.trim();
-              if (customUrl.isNotEmpty) {
-                if (isCover) {
-                  state.updateNgoProfile(coverUrl: customUrl);
-                } else {
-                  state.updateNgoProfile(avatarUrl: customUrl);
-                }
-              }
-              Navigator.pop(ctx);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('${isCover ? "Cover" : "Profile"} photo updated!'),
-                  backgroundColor: AppColors.ngoPrimary,
-                ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.ngoPrimary,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            ),
-            child: const Text('Save Photo', style: TextStyle(fontWeight: FontWeight.w800, color: Colors.white)),
+            child: const Text('Save Changes', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.white)),
           ),
         ],
       ),

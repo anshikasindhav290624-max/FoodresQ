@@ -35,9 +35,13 @@ class AppImage extends StatelessWidget {
   static const String groceryVeggies = 'https://images.unsplash.com/photo-1610348725531-843dff563e2c?w=600&auto=format&fit=crop&q=80';
   
   static const String restaurantKitchen = 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&auto=format&fit=crop&q=80';
+  static const String restaurantDining = 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&auto=format&fit=crop&q=80';
   static const String ngoCommunity = 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=600&auto=format&fit=crop&q=80';
+  static const String ngoDistribution = 'https://images.unsplash.com/photo-1593113598332-cd288d649433?w=600&auto=format&fit=crop&q=80';
   static const String vendorWholesale = 'https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=600&auto=format&fit=crop&q=80';
+  static const String vendorMarket = 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&auto=format&fit=crop&q=80';
   static const String kiranaStore = 'https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=600&auto=format&fit=crop&q=80';
+  static const String kiranaShop = 'https://images.unsplash.com/photo-1601598851547-4302969d0614?w=600&auto=format&fit=crop&q=80';
 
   @override
   Widget build(BuildContext context) {

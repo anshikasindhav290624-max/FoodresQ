@@ -64,6 +64,18 @@ class AppState extends ChangeNotifier {
   String _ngoEmail = 'contact@helpinghandsngo.org';
   String get ngoEmail => _ngoEmail;
 
+  String _ngoServiceArea = 'East & South Bengaluru (Indiranagar, Koramangala, HSR)';
+  String get ngoServiceArea => _ngoServiceArea;
+
+  String _ngoBeneficiaryCapacity = '500+ Daily Meals Supported';
+  String get ngoBeneficiaryCapacity => _ngoBeneficiaryCapacity;
+
+  String _ngoPickupAvailability = '11:00 AM – 10:30 PM (Daily)';
+  String get ngoPickupAvailability => _ngoPickupAvailability;
+
+  String _ngoOperatingHours = '09:00 AM – 11:00 PM';
+  String get ngoOperatingHours => _ngoOperatingHours;
+
   String _ngoAvatarUrl = AppImage.ngoCommunity;
   String get ngoAvatarUrl => _ngoAvatarUrl;
 
@@ -77,6 +89,10 @@ class AppState extends ChangeNotifier {
     String? contactPerson,
     String? phone,
     String? email,
+    String? serviceArea,
+    String? beneficiaryCapacity,
+    String? pickupAvailability,
+    String? operatingHours,
     String? avatarUrl,
     String? coverUrl,
   }) {
@@ -86,8 +102,193 @@ class AppState extends ChangeNotifier {
     if (contactPerson != null && contactPerson.isNotEmpty) _ngoContactPerson = contactPerson;
     if (phone != null && phone.isNotEmpty) _ngoPhone = phone;
     if (email != null && email.isNotEmpty) _ngoEmail = email;
+    if (serviceArea != null && serviceArea.isNotEmpty) _ngoServiceArea = serviceArea;
+    if (beneficiaryCapacity != null && beneficiaryCapacity.isNotEmpty) _ngoBeneficiaryCapacity = beneficiaryCapacity;
+    if (pickupAvailability != null && pickupAvailability.isNotEmpty) _ngoPickupAvailability = pickupAvailability;
+    if (operatingHours != null && operatingHours.isNotEmpty) _ngoOperatingHours = operatingHours;
     if (avatarUrl != null && avatarUrl.isNotEmpty) _ngoAvatarUrl = avatarUrl;
     if (coverUrl != null && coverUrl.isNotEmpty) _ngoCoverUrl = coverUrl;
+
+    notifyListeners();
+  }
+
+  // Kirana Profile State
+  String _kiranaStoreName = 'Sharma General Store';
+  String get kiranaStoreName => _kiranaStoreName;
+
+  String _kiranaOwnerName = 'Ramesh Sharma';
+  String get kiranaOwnerName => _kiranaOwnerName;
+
+  String _kiranaAddress = 'Indiranagar 100ft Rd, Bengaluru';
+  String get kiranaAddress => _kiranaAddress;
+
+  String _kiranaRegNumber = 'KA-BLR-KIR-2023-4109';
+  String get kiranaRegNumber => _kiranaRegNumber;
+
+  String _kiranaPhone = '+91 98450 12345';
+  String get kiranaPhone => _kiranaPhone;
+
+  String _kiranaEmail = 'sharma.kirana@foodresq.in';
+  String get kiranaEmail => _kiranaEmail;
+
+  String _kiranaCategory = 'Retail Grocery & Dairy';
+  String get kiranaCategory => _kiranaCategory;
+
+  String _kiranaOperatingHours = '07:30 AM – 10:00 PM';
+  String get kiranaOperatingHours => _kiranaOperatingHours;
+
+  String _kiranaAvatarUrl = AppImage.kiranaStore;
+  String get kiranaAvatarUrl => _kiranaAvatarUrl;
+
+  String _kiranaCoverUrl = AppImage.kiranaStore;
+  String get kiranaCoverUrl => _kiranaCoverUrl;
+
+  void updateKiranaProfile({
+    String? storeName,
+    String? ownerName,
+    String? address,
+    String? regNumber,
+    String? phone,
+    String? email,
+    String? category,
+    String? operatingHours,
+    String? avatarUrl,
+    String? coverUrl,
+  }) {
+    if (storeName != null && storeName.isNotEmpty) _kiranaStoreName = storeName;
+    if (ownerName != null && ownerName.isNotEmpty) _kiranaOwnerName = ownerName;
+    if (address != null && address.isNotEmpty) _kiranaAddress = address;
+    if (regNumber != null && regNumber.isNotEmpty) _kiranaRegNumber = regNumber;
+    if (phone != null && phone.isNotEmpty) _kiranaPhone = phone;
+    if (email != null && email.isNotEmpty) _kiranaEmail = email;
+    if (category != null && category.isNotEmpty) _kiranaCategory = category;
+    if (operatingHours != null && operatingHours.isNotEmpty) _kiranaOperatingHours = operatingHours;
+    if (avatarUrl != null && avatarUrl.isNotEmpty) _kiranaAvatarUrl = avatarUrl;
+    if (coverUrl != null && coverUrl.isNotEmpty) _kiranaCoverUrl = coverUrl;
+
+    notifyListeners();
+  }
+
+  // Restaurant Profile State
+  String _restaurantName = 'The Spice Symphony';
+  String get restaurantName => _restaurantName;
+
+  String _restaurantOwnerName = 'Rahul Verma';
+  String get restaurantOwnerName => _restaurantOwnerName;
+
+  String _restaurantAddress = 'Koramangala 5th Block, Bengaluru';
+  String get restaurantAddress => _restaurantAddress;
+
+  String _restaurantRegNumber = 'REG-KA-BLR-8921';
+  String get restaurantRegNumber => _restaurantRegNumber;
+
+  String _restaurantFssai = '11223344556677';
+  String get restaurantFssai => _restaurantFssai;
+
+  String _restaurantPhone = '+91 98765 43210';
+  String get restaurantPhone => _restaurantPhone;
+
+  String _restaurantEmail = 'manager@spicesymphony.com';
+  String get restaurantEmail => _restaurantEmail;
+
+  String _restaurantCuisine = 'North Indian & Mughlai Delicacies';
+  String get restaurantCuisine => _restaurantCuisine;
+
+  String _restaurantOperatingHours = '11:00 AM – 11:30 PM';
+  String get restaurantOperatingHours => _restaurantOperatingHours;
+
+  String _restaurantDonationPref = 'Freshly Cooked & Packaged Surplus';
+  String get restaurantDonationPref => _restaurantDonationPref;
+
+  String _restaurantAvatarUrl = AppImage.restaurantKitchen;
+  String get restaurantAvatarUrl => _restaurantAvatarUrl;
+
+  String _restaurantCoverUrl = AppImage.restaurantKitchen;
+  String get restaurantCoverUrl => _restaurantCoverUrl;
+
+  void updateRestaurantProfile({
+    String? name,
+    String? ownerName,
+    String? address,
+    String? regNumber,
+    String? fssai,
+    String? phone,
+    String? email,
+    String? cuisine,
+    String? operatingHours,
+    String? donationPref,
+    String? avatarUrl,
+    String? coverUrl,
+  }) {
+    if (name != null && name.isNotEmpty) _restaurantName = name;
+    if (ownerName != null && ownerName.isNotEmpty) _restaurantOwnerName = ownerName;
+    if (address != null && address.isNotEmpty) _restaurantAddress = address;
+    if (regNumber != null && regNumber.isNotEmpty) _restaurantRegNumber = regNumber;
+    if (fssai != null && fssai.isNotEmpty) _restaurantFssai = fssai;
+    if (phone != null && phone.isNotEmpty) _restaurantPhone = phone;
+    if (email != null && email.isNotEmpty) _restaurantEmail = email;
+    if (cuisine != null && cuisine.isNotEmpty) _restaurantCuisine = cuisine;
+    if (operatingHours != null && operatingHours.isNotEmpty) _restaurantOperatingHours = operatingHours;
+    if (donationPref != null && donationPref.isNotEmpty) _restaurantDonationPref = donationPref;
+    if (avatarUrl != null && avatarUrl.isNotEmpty) _restaurantAvatarUrl = avatarUrl;
+    if (coverUrl != null && coverUrl.isNotEmpty) _restaurantCoverUrl = coverUrl;
+
+    notifyListeners();
+  }
+
+  // Vendor Profile State
+  String _vendorBusinessName = 'FreshBuy Wholesale Traders';
+  String get vendorBusinessName => _vendorBusinessName;
+
+  String _vendorOwnerName = 'Suresh Patel';
+  String get vendorOwnerName => _vendorOwnerName;
+
+  String _vendorAddress = 'Yeshwanthpur Wholesale Market, Bengaluru';
+  String get vendorAddress => _vendorAddress;
+
+  String _vendorGstin = '29AAAAA0000A1Z5';
+  String get vendorGstin => _vendorGstin;
+
+  String _vendorPhone = '+91 94480 98765';
+  String get vendorPhone => _vendorPhone;
+
+  String _vendorEmail = 'orders@freshbuytraders.com';
+  String get vendorEmail => _vendorEmail;
+
+  String _vendorBusinessType = 'B2B Wholesale & Bulk Retail';
+  String get vendorBusinessType => _vendorBusinessType;
+
+  String _vendorOperatingHours = '06:00 AM – 08:30 PM';
+  String get vendorOperatingHours => _vendorOperatingHours;
+
+  String _vendorAvatarUrl = AppImage.vendorWholesale;
+  String get vendorAvatarUrl => _vendorAvatarUrl;
+
+  String _vendorCoverUrl = AppImage.vendorWholesale;
+  String get vendorCoverUrl => _vendorCoverUrl;
+
+  void updateVendorProfile({
+    String? businessName,
+    String? ownerName,
+    String? address,
+    String? gstin,
+    String? phone,
+    String? email,
+    String? businessType,
+    String? operatingHours,
+    String? avatarUrl,
+    String? coverUrl,
+  }) {
+    if (businessName != null && businessName.isNotEmpty) _vendorBusinessName = businessName;
+    if (ownerName != null && ownerName.isNotEmpty) _vendorOwnerName = ownerName;
+    if (address != null && address.isNotEmpty) _vendorAddress = address;
+    if (gstin != null && gstin.isNotEmpty) _vendorGstin = gstin;
+    if (phone != null && phone.isNotEmpty) _vendorPhone = phone;
+    if (email != null && email.isNotEmpty) _vendorEmail = email;
+    if (businessType != null && businessType.isNotEmpty) _vendorBusinessType = businessType;
+    if (operatingHours != null && operatingHours.isNotEmpty) _vendorOperatingHours = operatingHours;
+    if (avatarUrl != null && avatarUrl.isNotEmpty) _vendorAvatarUrl = avatarUrl;
+    if (coverUrl != null && coverUrl.isNotEmpty) _vendorCoverUrl = coverUrl;
 
     notifyListeners();
   }
@@ -100,13 +301,40 @@ class AppState extends ChangeNotifier {
   int _restaurantSavedMealsToday = 18;
   int get restaurantSavedMealsToday => _restaurantSavedMealsToday;
 
-  // Vendor Savings Stats
+  // Vendor Savings Stats (Preserving all exact requested values)
   double _vendorTotalPurchases = 28500.0;
   double get vendorTotalPurchases => _vendorTotalPurchases;
-  double _vendorMoneySaved = 6400.0;
+  double _vendorMoneySaved = 6940.0; // ₹6940 Saved
   double get vendorMoneySaved => _vendorMoneySaved;
-  int _vendorOrdersCount = 14;
+  int _vendorOrdersCount = 15; // 15 Orders Done
   int get vendorOrdersCount => _vendorOrdersCount;
+  final double _vendorNearExpiryKg = 86.0; // 86 kg Bought
+  double get vendorNearExpiryKg => _vendorNearExpiryKg;
+  final int _vendorAvgDiscount = 32; // 32% Average Discount
+  int get vendorAvgDiscount => _vendorAvgDiscount;
+  final int _vendorActiveDeals = 6; // 6 Active Deals
+  int get vendorActiveDeals => _vendorActiveDeals;
+
+  // Support Callback Dispatcher
+  void requestSupportCallback({
+    required String requesterName,
+    required String phone,
+    required String roleTitle,
+    required String subject,
+  }) {
+    _notifications.insert(
+      0,
+      NotificationModel(
+        id: 'NOTIF-${DateTime.now().millisecondsSinceEpoch}',
+        title: '📞 Callback Requested: $subject',
+        message: 'FoodResQ Priority Desk will call $requesterName ($phone) within 15 minutes.',
+        timestamp: DateTime.now(),
+        isRead: false,
+        targetRole: roleTitle,
+      ),
+    );
+    notifyListeners();
+  }
 
   // Kirana Recovery Stats
   double _kiranaRevenueRecovered = 12800.0;
