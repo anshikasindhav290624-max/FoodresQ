@@ -353,7 +353,6 @@ class _VendorProfileTabState extends State<VendorProfileTab> {
             // 4. NOTIFICATIONS, SUPPORT & UTILITIES MENU
             Container(
               decoration: BoxDecoration(
-                color: Colors.white,
                 borderRadius: BorderRadius.circular(22),
                 border: Border.all(color: AppColors.border),
                 boxShadow: [
@@ -364,56 +363,60 @@ class _VendorProfileTabState extends State<VendorProfileTab> {
                   ),
                 ],
               ),
-              child: Column(
-                children: [
-                  ListTile(
-                    leading: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(color: primaryColor.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
-                      child: const Icon(Icons.notifications_active_outlined, color: primaryColor, size: 20),
+              child: Material(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(22),
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(color: primaryColor.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                        child: const Icon(Icons.notifications_active_outlined, color: primaryColor, size: 20),
+                      ),
+                      title: const Text('Notifications & Alerts', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
+                      subtitle: const Text('Wholesale deals, order status & reports', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                      trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 15, color: AppColors.textSecondary),
+                      onTap: () => NotificationsModal.show(context, UserRole.vendor),
                     ),
-                    title: const Text('Notifications & Alerts', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
-                    subtitle: const Text('Wholesale deals, order status & reports', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
-                    trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 15, color: AppColors.textSecondary),
-                    onTap: () => NotificationsModal.show(context, UserRole.vendor),
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    leading: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(color: AppColors.aiAccent.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
-                      child: const Icon(Icons.help_center_outlined, color: AppColors.aiAccent, size: 20),
+                    const Divider(height: 1),
+                    ListTile(
+                      leading: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(color: AppColors.aiAccent.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                        child: const Icon(Icons.help_center_outlined, color: AppColors.aiAccent, size: 20),
+                      ),
+                      title: const Text('Partner Support & FAQs', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
+                      subtitle: const Text('Procurement guidelines, invoicing & policies', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                      trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 15, color: AppColors.textSecondary),
+                      onTap: () => SupportFaqModal.show(context, UserRole.vendor),
                     ),
-                    title: const Text('Partner Support & FAQs', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
-                    subtitle: const Text('Procurement guidelines, invoicing & policies', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
-                    trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 15, color: AppColors.textSecondary),
-                    onTap: () => SupportFaqModal.show(context, UserRole.vendor),
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    leading: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(color: AppColors.success.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
-                      child: const Icon(Icons.support_agent_rounded, color: AppColors.success, size: 20),
+                    const Divider(height: 1),
+                    ListTile(
+                      leading: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(color: AppColors.success.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                        child: const Icon(Icons.support_agent_rounded, color: AppColors.success, size: 20),
+                      ),
+                      title: const Text('Call Assistance', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
+                      subtitle: const Text('24/7 priority partner hotline & callback', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                      trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 15, color: AppColors.textSecondary),
+                      onTap: () => CallAssistanceModal.show(context, UserRole.vendor),
                     ),
-                    title: const Text('Call Assistance', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
-                    subtitle: const Text('24/7 priority partner hotline & callback', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
-                    trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 15, color: AppColors.textSecondary),
-                    onTap: () => CallAssistanceModal.show(context, UserRole.vendor),
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    leading: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(color: AppColors.info.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
-                      child: const Icon(Icons.verified_user_outlined, color: AppColors.info, size: 20),
+                    const Divider(height: 1),
+                    ListTile(
+                      leading: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(color: AppColors.info.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                        child: const Icon(Icons.verified_user_outlined, color: AppColors.info, size: 20),
+                      ),
+                      title: const Text('Verification & Store Documents', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
+                      subtitle: const Text('GSTIN certificate, APMC license & KYC', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                      trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 15, color: AppColors.textSecondary),
+                      onTap: () => VerificationDocumentsModal.show(context, UserRole.vendor),
                     ),
-                    title: const Text('Verification & Store Documents', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
-                    subtitle: const Text('GSTIN certificate, APMC license & KYC', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
-                    trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 15, color: AppColors.textSecondary),
-                    onTap: () => VerificationDocumentsModal.show(context, UserRole.vendor),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -421,26 +424,29 @@ class _VendorProfileTabState extends State<VendorProfileTab> {
             // 5. LOG OUT ACTION
             Container(
               decoration: BoxDecoration(
-                color: Colors.white,
                 borderRadius: BorderRadius.circular(18),
                 border: Border.all(color: AppColors.critical.withOpacity(0.25)),
               ),
-              child: ListTile(
-                leading: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(color: AppColors.critical.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
-                  child: const Icon(Icons.logout_rounded, color: AppColors.critical, size: 20),
+              child: Material(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(18),
+                child: ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(color: AppColors.critical.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                    child: const Icon(Icons.logout_rounded, color: AppColors.critical, size: 20),
+                  ),
+                  title: const Text('Log Out', style: TextStyle(fontWeight: FontWeight.w900, color: AppColors.critical)),
+                  subtitle: const Text('Sign out of FreshBuy Vendor portal', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                  trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 15, color: AppColors.critical),
+                  onTap: () {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => const FoodresQWelcomeScreen()),
+                      (route) => false,
+                    );
+                  },
                 ),
-                title: const Text('Log Out', style: TextStyle(fontWeight: FontWeight.w900, color: AppColors.critical)),
-                subtitle: const Text('Sign out of FreshBuy Vendor portal', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
-                trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 15, color: AppColors.critical),
-                onTap: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const FoodresQWelcomeScreen()),
-                    (route) => false,
-                  );
-                },
               ),
             ),
             const SizedBox(height: 24),

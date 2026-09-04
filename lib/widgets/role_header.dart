@@ -7,17 +7,19 @@ import 'ecosystem_diagram.dart';
 class RoleHeader extends StatelessWidget {
   final String title;
   final String subtitle;
+  final UserRole? role;
 
   const RoleHeader({
     super.key,
     required this.title,
     required this.subtitle,
+    this.role,
   });
 
   @override
   Widget build(BuildContext context) {
     final state = Provider.of<AppState>(context);
-    final activeRole = state.activeRole;
+    final activeRole = role ?? state.activeRole;
     final primaryColor = AppColors.getPrimaryForRole(activeRole);
     final unreadNotifs = state.notifications.where((n) => !n.isRead && (n.targetRole == AppColors.getRoleTitle(activeRole) || n.targetRole == 'NGO' && activeRole == UserRole.ngo)).length;
 

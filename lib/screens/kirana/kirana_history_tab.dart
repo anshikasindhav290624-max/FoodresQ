@@ -38,7 +38,7 @@ class KiranaHistoryTab extends StatelessWidget {
                     border: Border.all(color: AppColors.border),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.04),
+                        color: Colors.black.withValues(alpha: 0.04),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -47,7 +47,7 @@ class KiranaHistoryTab extends StatelessWidget {
                   child: Row(
                     children: [
                       AppImage(
-                        url: AppImage.groceryMilk,
+                        url: AppImage.getProductImage(txn.itemTitle),
                         width: 60,
                         height: 60,
                         borderRadius: 12,

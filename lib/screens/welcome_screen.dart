@@ -321,37 +321,58 @@ class FoodresQWelcomeScreen extends StatelessWidget {
             ),
             // Text & Emoji Content
             Positioned(
-              left: 10,
-              right: 10,
-              bottom: 10,
+              left: 6,
+              right: 6,
+              bottom: 8,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(emoji, style: const TextStyle(fontSize: 14)),
+                      Text(emoji, style: const TextStyle(fontSize: 18)),
                       const SizedBox(width: 4),
-                      Expanded(
+                      Flexible(
                         child: Text(
                           title,
                           style: const TextStyle(
-                            fontSize: 13,
+                            fontSize: 20,
                             fontWeight: FontWeight.w900,
                             color: Colors.white,
+                            letterSpacing: -0.3,
+                            shadows: [
+                              Shadow(
+                                color: Colors.black87,
+                                offset: Offset(0, 1.5),
+                                blurRadius: 4,
+                              ),
+                            ],
                           ),
+                          maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
                   ),
+                  const SizedBox(height: 2),
                   Text(
                     subtitle,
                     style: TextStyle(
-                      fontSize: 10,
+                      fontSize: 11,
                       fontWeight: FontWeight.w600,
-                      color: Colors.white.withOpacity(0.85),
+                      color: Colors.white.withOpacity(0.9),
+                      shadows: const [
+                        Shadow(
+                          color: Colors.black87,
+                          offset: Offset(0, 1),
+                          blurRadius: 3,
+                        ),
+                      ],
                     ),
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],

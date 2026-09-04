@@ -4,7 +4,7 @@ import 'package:flutter_application_1/main.dart';
 import 'package:flutter_application_1/state/app_state.dart';
 
 void main() {
-  testWidgets('App renders splash screen', (WidgetTester tester) async {
+  testWidgets('App renders landing page directly with Get Started and role cards', (WidgetTester tester) async {
     await tester.pumpWidget(
       ChangeNotifierProvider(
         create: (_) => AppState(),
@@ -12,6 +12,13 @@ void main() {
       ),
     );
 
-    expect(find.text('RescuEats'), findsOneWidget);
+    // Verify GET STARTED button is present on the initial landing screen
+    expect(find.text('GET STARTED'), findsOneWidget);
+
+    // Verify the four role labels are present
+    expect(find.text('Restaurant'), findsOneWidget);
+    expect(find.text('NGO'), findsOneWidget);
+    expect(find.text('Vendor'), findsOneWidget);
+    expect(find.text('Kirana'), findsOneWidget);
   });
 }

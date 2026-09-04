@@ -220,49 +220,95 @@ class _RestaurantProfileTabState extends State<RestaurantProfileTab> {
             ),
             const SizedBox(height: 16),
 
-            // 2. FOODRESQ GREEN REWARDS & ESG IMPACT CARD
+            // 2. FOODRESQ REWARDS & CIRCULAR ECONOMY TIER CARD
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    primaryColor.withOpacity(0.08),
-                    AppColors.warning.withOpacity(0.08),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: primaryColor.withOpacity(0.3)),
+                border: Border.all(color: const Color(0xFFF59E0B).withOpacity(0.35), width: 1.2),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFF59E0B).withOpacity(0.06),
+                    blurRadius: 10,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
               ),
-              child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: primaryColor,
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: const Icon(Icons.workspace_premium_rounded, color: Colors.white, size: 28),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF59E0B).withOpacity(0.15),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Text(state.rewardTierEmoji, style: const TextStyle(fontSize: 20)),
+                          ),
+                          const SizedBox(width: 10),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'FoodResQ Rewards',
+                                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: AppColors.textPrimary),
+                              ),
+                              Text(
+                                '${state.rewardTierName} Tier • 80G Certified',
+                                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFFD97706)),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF59E0B).withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFFF59E0B).withOpacity(0.35)),
+                        ),
+                        child: Text(
+                          '${state.restaurantPoints} pts',
+                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w900, color: Color(0xFFD97706)),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text('FoodResQ Green Partner • Gold Tier', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: AppColors.textPrimary)),
-                        SizedBox(height: 2),
-                        Text('1,240 ESG Impact Points • Tax Exemption 80G Certified', style: TextStyle(fontSize: 11, color: AppColors.textSecondary, fontWeight: FontWeight.w600)),
-                      ],
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '+${state.pointsEarnedThisMonth} pts this month',
+                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.success),
+                      ),
+                      Text(
+                        state.pointsToNextTier > 0 ? '${state.pointsToNextTier} pts to next tier' : 'Top Tier Champion! 🏆',
+                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: LinearProgressIndicator(
+                      value: state.tierProgress.clamp(0.05, 1.0),
+                      minHeight: 6,
+                      backgroundColor: const Color(0xFFF59E0B).withOpacity(0.15),
+                      valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFD97706)),
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: AppColors.success.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Text('ACTIVE', style: TextStyle(color: AppColors.success, fontWeight: FontWeight.bold, fontSize: 10)),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'Earn 10 pts/kg of surplus food rescued. Redeem 500 pts for ₹100 OFF Kirana near-expiry stock.',
+                    style: TextStyle(fontSize: 10.5, color: AppColors.textSecondary, height: 1.3),
                   ),
                 ],
               ),
@@ -416,9 +462,9 @@ class _RestaurantProfileTabState extends State<RestaurantProfileTab> {
             const SizedBox(height: 16),
 
             // 5. NOTIFICATIONS, SUPPORT & UTILITIES MENU
+            // 5. HELP & SUPPORT SECTIONS
             Container(
               decoration: BoxDecoration(
-                color: Colors.white,
                 borderRadius: BorderRadius.circular(22),
                 border: Border.all(color: AppColors.border),
                 boxShadow: [
@@ -429,56 +475,60 @@ class _RestaurantProfileTabState extends State<RestaurantProfileTab> {
                   ),
                 ],
               ),
-              child: Column(
-                children: [
-                  ListTile(
-                    leading: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(color: primaryColor.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
-                      child: const Icon(Icons.notifications_active_outlined, color: primaryColor, size: 20),
+              child: Material(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(22),
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(color: primaryColor.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                        child: const Icon(Icons.notifications_active_outlined, color: primaryColor, size: 20),
+                      ),
+                      title: const Text('Notifications & Alerts', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
+                      subtitle: const Text('Surplus pickups, cascade alerts & ESG reports', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                      trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 15, color: AppColors.textSecondary),
+                      onTap: () => NotificationsModal.show(context, UserRole.restaurant),
                     ),
-                    title: const Text('Notifications & Alerts', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
-                    subtitle: const Text('Surplus pickups, cascade alerts & ESG reports', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
-                    trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 15, color: AppColors.textSecondary),
-                    onTap: () => NotificationsModal.show(context, UserRole.restaurant),
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    leading: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(color: AppColors.success.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
-                      child: const Icon(Icons.verified_user_outlined, color: AppColors.success, size: 20),
+                    const Divider(height: 1),
+                    ListTile(
+                      leading: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(color: AppColors.success.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                        child: const Icon(Icons.verified_user_outlined, color: AppColors.success, size: 20),
+                      ),
+                      title: const Text('FSSAI & Food Safety Documents', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
+                      subtitle: const Text('FSSAI certificate, BBMP health license, fire NOC', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                      trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 15, color: AppColors.textSecondary),
+                      onTap: () => VerificationDocumentsModal.show(context, UserRole.restaurant),
                     ),
-                    title: const Text('FSSAI & Food Safety Documents', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
-                    subtitle: const Text('FSSAI certificate, BBMP health license, fire NOC', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
-                    trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 15, color: AppColors.textSecondary),
-                    onTap: () => VerificationDocumentsModal.show(context, UserRole.restaurant),
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    leading: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(color: AppColors.aiAccent.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
-                      child: const Icon(Icons.help_center_outlined, color: AppColors.aiAccent, size: 20),
+                    const Divider(height: 1),
+                    ListTile(
+                      leading: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(color: AppColors.aiAccent.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                        child: const Icon(Icons.help_center_outlined, color: AppColors.aiAccent, size: 20),
+                      ),
+                      title: const Text('Partner Support & FAQs', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
+                      subtitle: const Text('Cascade timer rules, packaging standards & tax credits', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                      trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 15, color: AppColors.textSecondary),
+                      onTap: () => SupportFaqModal.show(context, UserRole.restaurant),
                     ),
-                    title: const Text('Partner Support & FAQs', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
-                    subtitle: const Text('Cascade timer rules, packaging standards & tax credits', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
-                    trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 15, color: AppColors.textSecondary),
-                    onTap: () => SupportFaqModal.show(context, UserRole.restaurant),
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    leading: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(color: AppColors.info.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
-                      child: const Icon(Icons.support_agent_rounded, color: AppColors.info, size: 20),
+                    const Divider(height: 1),
+                    ListTile(
+                      leading: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(color: AppColors.info.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                        child: const Icon(Icons.support_agent_rounded, color: AppColors.info, size: 20),
+                      ),
+                      title: const Text('Call Assistance', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
+                      subtitle: const Text('24/7 priority restaurant partner desk & callback', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                      trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 15, color: AppColors.textSecondary),
+                      onTap: () => CallAssistanceModal.show(context, UserRole.restaurant),
                     ),
-                    title: const Text('Call Assistance', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
-                    subtitle: const Text('24/7 priority restaurant partner desk & callback', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
-                    trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 15, color: AppColors.textSecondary),
-                    onTap: () => CallAssistanceModal.show(context, UserRole.restaurant),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -486,26 +536,29 @@ class _RestaurantProfileTabState extends State<RestaurantProfileTab> {
             // 6. LOG OUT ACTION
             Container(
               decoration: BoxDecoration(
-                color: Colors.white,
                 borderRadius: BorderRadius.circular(18),
                 border: Border.all(color: AppColors.critical.withOpacity(0.25)),
               ),
-              child: ListTile(
-                leading: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(color: AppColors.critical.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
-                  child: const Icon(Icons.logout_rounded, color: AppColors.critical, size: 20),
+              child: Material(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(18),
+                child: ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(color: AppColors.critical.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                    child: const Icon(Icons.logout_rounded, color: AppColors.critical, size: 20),
+                  ),
+                  title: const Text('Log Out', style: TextStyle(fontWeight: FontWeight.w900, color: AppColors.critical)),
+                  subtitle: const Text('Sign out of Urban Tadka Restaurant portal', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                  trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 15, color: AppColors.critical),
+                  onTap: () {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => const FoodresQWelcomeScreen()),
+                      (route) => false,
+                    );
+                  },
                 ),
-                title: const Text('Log Out', style: TextStyle(fontWeight: FontWeight.w900, color: AppColors.critical)),
-                subtitle: const Text('Sign out of Urban Tadka Restaurant portal', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
-                trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 15, color: AppColors.critical),
-                onTap: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const FoodresQWelcomeScreen()),
-                    (route) => false,
-                  );
-                },
               ),
             ),
             const SizedBox(height: 24),

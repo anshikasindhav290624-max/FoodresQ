@@ -232,3 +232,26 @@ class SmartMatchResult {
     required this.pickupReliability,
   });
 }
+
+class PointTransaction {
+  final String id;
+  final int points; // positive for earned, negative for redeemed
+  final String title;
+  final String description;
+  final String quantityStr;
+  final DateTime timestamp;
+  final bool isEarned;
+  final String relatedId;
+
+  PointTransaction({
+    required this.id,
+    required this.points,
+    required this.title,
+    required this.description,
+    required this.quantityStr,
+    required this.timestamp,
+    required this.isEarned,
+    this.relatedId = '',
+  });
+}
+
