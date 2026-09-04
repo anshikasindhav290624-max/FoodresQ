@@ -201,6 +201,46 @@ class AppState extends ChangeNotifier {
   int _vendorOrdersCount = 14;
   int get vendorOrdersCount => _vendorOrdersCount;
 
+  // Derived Vendor metrics
+  double get vendorMonthlySavings => _vendorMoneySaved * 0.18;
+  int get vendorNearExpiryBought => _kiranaWastePreventedKg;
+
+  // Vendor Profile State
+  String _vendorName = 'FreshBuy Wholesale Traders';
+  String get vendorName => _vendorName;
+
+  String _vendorOwnerName = 'Suresh Patel';
+  String get vendorOwnerName => _vendorOwnerName;
+
+  String _vendorLocation = 'Yeshwanthpur Wholesale Market, Bengaluru';
+  String get vendorLocation => _vendorLocation;
+
+  String _vendorLicenseNumber = 'GSTIN: 29AAAAA0000A1Z5';
+  String get vendorLicenseNumber => _vendorLicenseNumber;
+
+  String _vendorPhone = '+91 99001 22334';
+  String get vendorPhone => _vendorPhone;
+
+  String _vendorEmail = 'freshbuy@foodresq.in';
+  String get vendorEmail => _vendorEmail;
+
+  void updateVendorProfile({
+    String? name,
+    String? ownerName,
+    String? location,
+    String? licenseNumber,
+    String? phone,
+    String? email,
+  }) {
+    if (name != null && name.isNotEmpty) _vendorName = name;
+    if (ownerName != null && ownerName.isNotEmpty) _vendorOwnerName = ownerName;
+    if (location != null && location.isNotEmpty) _vendorLocation = location;
+    if (licenseNumber != null && licenseNumber.isNotEmpty) _vendorLicenseNumber = licenseNumber;
+    if (phone != null && phone.isNotEmpty) _vendorPhone = phone;
+    if (email != null && email.isNotEmpty) _vendorEmail = email;
+    notifyListeners();
+  }
+
   // Kirana Recovery Stats
   double _kiranaRevenueRecovered = 12800.0;
   double get kiranaRevenueRecovered => _kiranaRevenueRecovered;
