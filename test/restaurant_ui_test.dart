@@ -131,7 +131,8 @@ void main() {
 
     // 5. Verify Food Value Recovery Pipeline
     expect(find.text('Food Value Recovery Pipeline'), findsOneWidget);
-    expect(find.text('Prepared'), findsOneWidget);
+    expect(find.text('Prepared')
+    , findsOneWidget);
     expect(find.text('Surplus'), findsWidgets);
     expect(find.text('Recovered'), findsWidgets);
     expect(find.text('Prevented'), findsWidgets);

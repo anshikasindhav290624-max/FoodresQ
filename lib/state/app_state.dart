@@ -100,6 +100,58 @@ class AppState extends ChangeNotifier {
   int _restaurantSavedMealsToday = 18;
   int get restaurantSavedMealsToday => _restaurantSavedMealsToday;
 
+  // Restaurant Profile State
+  String _restaurantName = 'Urban Tadka Restaurant';
+  String get restaurantName => _restaurantName;
+
+  String _restaurantOwnerName = 'Chef Arvind Kapoor';
+  String get restaurantOwnerName => _restaurantOwnerName;
+
+  String _restaurantLocation = 'Koramangala 5th Block, Bengaluru';
+  String get restaurantLocation => _restaurantLocation;
+
+  String _restaurantRegNumber = 'REST-KA-2023-4471';
+  String get restaurantRegNumber => _restaurantRegNumber;
+
+  String _restaurantFssai = '11223344556677';
+  String get restaurantFssai => _restaurantFssai;
+
+  String _restaurantPhone = '+91 80 4567 8901';
+  String get restaurantPhone => _restaurantPhone;
+
+  String _restaurantEmail = 'urban.tadka@foodresq.in';
+  String get restaurantEmail => _restaurantEmail;
+
+  String _restaurantCuisine = 'North Indian, Mughlai';
+  String get restaurantCuisine => _restaurantCuisine;
+
+  String _restaurantHours = 'Mon–Sun, 11 AM – 11 PM';
+  String get restaurantHours => _restaurantHours;
+
+  void updateRestaurantProfile({
+    String? name,
+    String? ownerName,
+    String? location,
+    String? regNumber,
+    String? fssai,
+    String? phone,
+    String? email,
+    String? cuisine,
+    String? hours,
+  }) {
+    if (name != null && name.isNotEmpty) _restaurantName = name;
+    if (ownerName != null && ownerName.isNotEmpty) _restaurantOwnerName = ownerName;
+    if (location != null && location.isNotEmpty) _restaurantLocation = location;
+    if (regNumber != null && regNumber.isNotEmpty) _restaurantRegNumber = regNumber;
+    if (fssai != null && fssai.isNotEmpty) _restaurantFssai = fssai;
+    if (phone != null && phone.isNotEmpty) _restaurantPhone = phone;
+    if (email != null && email.isNotEmpty) _restaurantEmail = email;
+    if (cuisine != null && cuisine.isNotEmpty) _restaurantCuisine = cuisine;
+    if (hours != null && hours.isNotEmpty) _restaurantHours = hours;
+    notifyListeners();
+  }
+
+
   // FoodResQ Reward Points State (Connected Circular Economy: Restaurant <-> NGO <-> Kirana)
   int _restaurantPoints = 2450;
   int get restaurantPoints => _restaurantPoints;
