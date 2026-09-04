@@ -95,7 +95,7 @@ class AppState extends ChangeNotifier {
   // Restaurant Analytics Stats
   double _restaurantRevenueToday = 4250.0;
   double get restaurantRevenueToday => _restaurantRevenueToday;
-  double _restaurantWasteKgToday = 24.0;
+  final double _restaurantWasteKgToday = 24.0;
   double get restaurantWasteKgToday => _restaurantWasteKgToday;
   int _restaurantSavedMealsToday = 18;
   int get restaurantSavedMealsToday => _restaurantSavedMealsToday;

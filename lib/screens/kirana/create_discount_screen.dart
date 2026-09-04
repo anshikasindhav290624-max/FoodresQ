@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../state/app_state.dart';
 import '../../theme/app_theme.dart';
-import '../../widgets/app_image.dart';
 
 class CreateDiscountScreen extends StatefulWidget {
   const CreateDiscountScreen({super.key});
@@ -17,8 +16,8 @@ class _CreateDiscountScreenState extends State<CreateDiscountScreen> {
   final _discountedPriceCtrl = TextEditingController(text: '21');
   final _qtyCtrl = TextEditingController(text: '12');
   String _unit = 'packs';
-  int _discountPercent = 30;
-  String _category = 'Dairy';
+  final int _discountPercent = 30;
+  final String _category = 'Dairy';
 
   @override
   Widget build(BuildContext context) {

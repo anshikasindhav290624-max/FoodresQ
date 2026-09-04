@@ -112,7 +112,6 @@ class _RoleAuthScreenState extends State<RoleAuthScreen> {
     final roleColor = AppColors.getPrimaryForRole(widget.role);
     final roleEmoji = AppColors.getRoleEmoji(widget.role);
     final roleTitle = AppColors.getRoleTitle(widget.role);
-    final roleBg = AppColors.getBgForRole(widget.role);
     final imageUrl = _getRoleImageUrl();
 
     return Scaffold(
