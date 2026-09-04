@@ -181,55 +181,58 @@ class _RestaurantAnalyticsTabState extends State<RestaurantAnalyticsTab> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: AppColors.restaurantPrimary.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('🍽️', style: TextStyle(fontSize: 11)),
-                          SizedBox(width: 4),
-                          Text(
-                            'RESTAURANT INTELLIGENCE',
-                            style: TextStyle(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w900,
-                              color: AppColors.restaurantPrimary,
-                              letterSpacing: 0.8,
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: AppColors.restaurantPrimary.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text('🍽️', style: TextStyle(fontSize: 11)),
+                            SizedBox(width: 4),
+                            Text(
+                              'RESTAURANT INTELLIGENCE',
+                              style: TextStyle(
+                                fontSize: 9,
+                                fontWeight: FontWeight.w900,
+                                color: AppColors.restaurantPrimary,
+                                letterSpacing: 0.8,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF59E0B).withValues(alpha: 0.14),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Text('⭐', style: TextStyle(fontSize: 10)),
-                          const SizedBox(width: 3),
-                          Text(
-                            '${state.restaurantPoints} pts',
-                            style: const TextStyle(
-                              fontSize: 9.5,
-                              fontWeight: FontWeight.w900,
-                              color: Color(0xFFD97706),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF59E0B).withValues(alpha: 0.14),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text('⭐', style: TextStyle(fontSize: 10)),
+                            const SizedBox(width: 3),
+                            Text(
+                              '${state.restaurantPoints} pts',
+                              style: const TextStyle(
+                                fontSize: 9.5,
+                                fontWeight: FontWeight.w900,
+                                color: Color(0xFFD97706),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 4),
                 const Text(
@@ -837,32 +840,41 @@ class _RestaurantAnalyticsTabState extends State<RestaurantAnalyticsTab> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF59E0B).withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(10),
+              Expanded(
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF59E0B).withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Text('⭐', style: TextStyle(fontSize: 18)),
                     ),
-                    child: const Text('⭐', style: TextStyle(fontSize: 18)),
-                  ),
-                  const SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'FoodResQ Circular Rewards',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: AppColors.textPrimary),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'FoodResQ Circular Rewards',
+                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: AppColors.textPrimary),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            'Tier: ${state.rewardTierEmoji} ${state.rewardTierName}',
+                            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFFD97706)),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
                       ),
-                      Text(
-                        'Tier: ${state.rewardTierEmoji} ${state.rewardTierName}',
-                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFFD97706)),
-                      ),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
@@ -872,7 +884,7 @@ class _RestaurantAnalyticsTabState extends State<RestaurantAnalyticsTab> {
                 ),
                 child: Text(
                   '${state.restaurantPoints} Points',
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Color(0xFFD97706)),
+                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w900, color: Color(0xFFD97706)),
                 ),
               ),
             ],
@@ -901,17 +913,29 @@ class _RestaurantAnalyticsTabState extends State<RestaurantAnalyticsTab> {
                   ],
                 ),
                 const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildLoopStep('🍽️ RESTAURANT', 'Surplus Food', AppColors.restaurantPrimary),
-                    const Icon(Icons.arrow_forward_rounded, size: 14, color: AppColors.textSecondary),
-                    _buildLoopStep('🤝 NGO', 'Rescues Food', AppColors.ngoPrimary),
-                    const Icon(Icons.arrow_forward_rounded, size: 14, color: AppColors.textSecondary),
-                    _buildLoopStep('⭐ REWARDS', '+10 pts/kg', const Color(0xFFD97706)),
-                    const Icon(Icons.arrow_forward_rounded, size: 14, color: AppColors.textSecondary),
-                    _buildLoopStep('🏪 KIRANA', 'Discount Buy', AppColors.success),
-                  ],
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildLoopStep('🍽️ RESTAURANT', 'Surplus Food', AppColors.restaurantPrimary),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 4.0),
+                        child: Icon(Icons.arrow_forward_rounded, size: 14, color: AppColors.textSecondary),
+                      ),
+                      _buildLoopStep('🤝 NGO', 'Rescues Food', AppColors.ngoPrimary),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 4.0),
+                        child: Icon(Icons.arrow_forward_rounded, size: 14, color: AppColors.textSecondary),
+                      ),
+                      _buildLoopStep('⭐ REWARDS', '+10 pts/kg', const Color(0xFFD97706)),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 4.0),
+                        child: Icon(Icons.arrow_forward_rounded, size: 14, color: AppColors.textSecondary),
+                      ),
+                      _buildLoopStep('🏪 KIRANA', 'Discount Buy', AppColors.success),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -976,12 +1000,15 @@ class _RestaurantAnalyticsTabState extends State<RestaurantAnalyticsTab> {
                 child: OutlinedButton.icon(
                   onPressed: () => _showPointsHistoryDialog(context, state),
                   icon: const Icon(Icons.history_rounded, size: 16),
-                  label: const Text('POINTS HISTORY', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
+                  label: const FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text('POINTS HISTORY', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
+                  ),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: const Color(0xFFD97706),
                     side: const BorderSide(color: Color(0xFFF59E0B), width: 1.2),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
                   ),
                 ),
               ),
@@ -990,12 +1017,15 @@ class _RestaurantAnalyticsTabState extends State<RestaurantAnalyticsTab> {
                 child: ElevatedButton.icon(
                   onPressed: () => _showKiranaMarketplaceDialog(context, state),
                   icon: const Icon(Icons.storefront_rounded, size: 16),
-                  label: const Text('REDEEM ON KIRANA', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900)),
+                  label: const FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text('REDEEM ON KIRANA', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900)),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFD97706),
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
                     elevation: 1,
                   ),
                 ),
@@ -1073,15 +1103,21 @@ class _RestaurantAnalyticsTabState extends State<RestaurantAnalyticsTab> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: const [
-                      Text('⭐', style: TextStyle(fontSize: 22)),
-                      SizedBox(width: 8),
-                      Text(
-                        'FoodResQ Points Ledger',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.textPrimary),
-                      ),
-                    ],
+                  Expanded(
+                    child: Row(
+                      children: const [
+                        Text('⭐', style: TextStyle(fontSize: 22)),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'FoodResQ Points Ledger',
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.textPrimary),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close_rounded),
@@ -1126,10 +1162,15 @@ class _RestaurantAnalyticsTabState extends State<RestaurantAnalyticsTab> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    item.title,
-                                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+                                  Expanded(
+                                    child: Text(
+                                      item.title,
+                                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
+                                  const SizedBox(width: 8),
                                   Text(
                                     isEarned ? '+${item.points} pts' : '${item.points} pts',
                                     style: TextStyle(
@@ -1199,15 +1240,21 @@ class _RestaurantAnalyticsTabState extends State<RestaurantAnalyticsTab> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: const [
-                          Text('🏪', style: TextStyle(fontSize: 22)),
-                          SizedBox(width: 8),
-                          Text(
-                            'Kirana Near-Expiry Deals',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.textPrimary),
-                          ),
-                        ],
+                      Expanded(
+                        child: Row(
+                          children: const [
+                            Text('🏪', style: TextStyle(fontSize: 22)),
+                            SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Kirana Near-Expiry Deals',
+                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.textPrimary),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                       IconButton(
                         icon: const Icon(Icons.close_rounded),
@@ -1219,10 +1266,15 @@ class _RestaurantAnalyticsTabState extends State<RestaurantAnalyticsTab> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Redeem 500 FoodResQ Points for ₹100 extra OFF',
-                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+                      const Expanded(
+                        child: Text(
+                          'Redeem 500 FoodResQ Points for ₹100 extra OFF',
+                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
+                      const SizedBox(width: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(

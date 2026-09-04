@@ -49,27 +49,33 @@ class _NgoHistoryTabState extends State<NgoHistoryTab> {
           // Filter tabs
           Container(
             color: Colors.white,
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: ['ALL', 'COMPLETED', 'EXPIRED', 'CANCELLED'].map((filter) {
-                final isSel = selectedFilter == filter;
-                return ChoiceChip(
-                  label: Text(filter),
-                  selected: isSel,
-                  onSelected: (v) {
-                    setState(() {
-                      selectedFilter = filter;
-                    });
-                  },
-                  selectedColor: AppColors.ngoPrimary,
-                  labelStyle: TextStyle(
-                    color: isSel ? Colors.white : AppColors.textPrimary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 11,
-                  ),
-                );
-              }).toList(),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            width: double.infinity,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: ['ALL', 'COMPLETED', 'EXPIRED', 'CANCELLED'].map((filter) {
+                  final isSel = selectedFilter == filter;
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: ChoiceChip(
+                      label: Text(filter),
+                      selected: isSel,
+                      onSelected: (v) {
+                        setState(() {
+                          selectedFilter = filter;
+                        });
+                      },
+                      selectedColor: AppColors.ngoPrimary,
+                      labelStyle: TextStyle(
+                        color: isSel ? Colors.white : AppColors.textPrimary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 11,
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
             ),
           ),
           Expanded(

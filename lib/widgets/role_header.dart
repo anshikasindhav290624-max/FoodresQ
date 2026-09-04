@@ -147,9 +147,13 @@ class RoleHeader extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'RescuEats Circular Ecosystem',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                  const Expanded(
+                    child: Text(
+                      'RescuEats Circular Ecosystem',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close),
@@ -187,9 +191,13 @@ class RoleHeader extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Intelligent Notifications',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                  const Expanded(
+                    child: Text(
+                      'Intelligent Notifications',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                   TextButton(
                     onPressed: () {

@@ -145,28 +145,35 @@ class NgoHomeTab extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        children: [
-                          Container(
-                            width: 10,
-                            height: 10,
-                            decoration: BoxDecoration(
-                              color: isAccepting ? AppColors.success : AppColors.critical,
-                              shape: BoxShape.circle,
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 10,
+                              height: 10,
+                              decoration: BoxDecoration(
+                                color: isAccepting ? AppColors.success : AppColors.critical,
+                                shape: BoxShape.circle,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            isAccepting ? 'ACCEPTING SURPLUS FOOD' : 'NOT ACCEPTING FOOD',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w900,
-                              color: isAccepting ? AppColors.success : AppColors.critical,
-                              letterSpacing: 1.0,
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                isAccepting ? 'ACCEPTING SURPLUS FOOD' : 'NOT ACCEPTING FOOD',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w900,
+                                  color: isAccepting ? AppColors.success : AppColors.critical,
+                                  letterSpacing: 0.8,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
+                      const SizedBox(width: 8),
                       Switch(
                         value: isAccepting,
                         onChanged: (val) => state.toggleNgoRequirement(),

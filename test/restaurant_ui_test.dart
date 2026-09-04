@@ -3,6 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_application_1/state/app_state.dart';
 import 'package:flutter_application_1/screens/restaurant/restaurant_main_screen.dart';
+import 'package:flutter_application_1/screens/restaurant/add_surplus_screen.dart';
+import 'package:flutter_application_1/screens/welcome_screen.dart';
+import 'package:flutter_application_1/widgets/transaction_detail_dialog.dart';
+import 'package:flutter_application_1/models/models.dart';
 
 void main() {
   testWidgets('Restaurant interface renders all components following Kirana design system', (WidgetTester tester) async {
@@ -204,6 +208,125 @@ void main() {
     expect(find.text('Revenue Recovered'), findsOneWidget);
     expect(find.text('+ ADD SURPLUS FOOD BATCH'), findsOneWidget);
     expect(find.text('SURPLUS RECOVERY & REVENUE MANAGEMENT'), findsOneWidget);
+
+    appState.dispose();
+  });
+
+  testWidgets('AddSurplusScreen photo change picker opens and allows preset selection', (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(360, 780);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final appState = AppState();
+
+    await tester.pumpWidget(
+      ChangeNotifierProvider.value(
+        value: appState,
+        child: const MaterialApp(
+          home: AddSurplusScreen(),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    // Verify initial screen state
+    expect(find.text('Add Surplus Food Batch'), findsOneWidget);
+    expect(find.text('Change Photo'), findsOneWidget);
+
+    // Tap "Change Photo" button
+    await tester.tap(find.text('Change Photo'));
+    await tester.pumpAndSettle();
+
+    // Verify photo picker bottom sheet opened
+    expect(find.text('Select Food Batch Photo'), findsOneWidget);
+    expect(find.text('Camera'), findsOneWidget);
+    expect(find.text('Gallery'), findsOneWidget);
+    expect(find.text('Punjabi Thali'), findsOneWidget);
+    expect(find.text('Dum Biryani'), findsOneWidget);
+
+    // Tap a preset
+    await tester.tap(find.text('Punjabi Thali'));
+    await tester.pumpAndSettle();
+
+    // Verify modal dismissed and screen intact
+    expect(find.text('Add Surplus Food Batch'), findsOneWidget);
+    expect(find.text('POST SURPLUS & TRIGGER SMART MATCH'), findsOneWidget);
+
+    appState.dispose();
+  });
+
+  testWidgets('TransactionDetailDialog renders responsively on narrow mobile viewport (320x640) without overflow', (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(320, 640);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final testTxn = TransactionRecord(
+      id: 'TXN-998811',
+      timestamp: DateTime.now(),
+      quantityStr: '40 Meals',
+      roleType: 'Restaurant Surplus',
+      participant1: 'Spice Garden Royal Family Restaurant & Caterers',
+      participant2: 'Helping Hands Foundation & Food Rescue Network',
+      itemTitle: 'Paneer Butter Masala, Dal Makhani & Garlic Naan Feast (40 Meals)',
+      status: 'COMPLETED',
+      impactSummary: 'Rescued 40 high-protein nutritious meals, diverted 16 kg food waste',
+      originalValue: 4800,
+      finalValue: 0,
+      savedValue: 4800,
+      timeline: [
+        TransactionStep(title: 'Batch posted by Restaurant', timestamp: '19:45 PM', isCompleted: true),
+        TransactionStep(title: 'Dispatched to Helping Hands NGO', timestamp: '19:48 PM', isCompleted: true),
+        TransactionStep(title: 'Delivered & Distributed', timestamp: '20:15 PM', isCompleted: true),
+      ],
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Builder(
+            builder: (ctx) => ElevatedButton(
+              onPressed: () => TransactionDetailDialog.show(ctx, testTxn),
+              child: const Text('OPEN'),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('OPEN'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('TRANSACTION #TXN-998811'), findsOneWidget);
+    expect(find.text('Parties Involved'), findsOneWidget);
+    expect(find.text('Spice Garden Royal Family Restaurant & Caterers ➔ Helping Hands Foundation & Food Rescue Network'), findsOneWidget);
+    expect(find.text('CLOSE'), findsOneWidget);
+  });
+
+  testWidgets('FoodresQWelcomeScreen renders role cards without clipping on 320x640', (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(320, 640);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    final appState = AppState();
+
+    await tester.pumpWidget(
+      ChangeNotifierProvider.value(
+        value: appState,
+        child: const MaterialApp(
+          home: FoodresQWelcomeScreen(),
+        ),
+      ),
+    );
+
+    await tester.pump(const Duration(milliseconds: 100));
+
+    expect(find.text('FoodresQ'), findsWidgets);
+    expect(find.text('Restaurant'), findsOneWidget);
+    expect(find.text('NGO'), findsOneWidget);
+    expect(find.text('Vendor'), findsOneWidget);
+    expect(find.text('Kirana'), findsOneWidget);
+    expect(find.text('GET STARTED'), findsOneWidget);
 
     appState.dispose();
   });

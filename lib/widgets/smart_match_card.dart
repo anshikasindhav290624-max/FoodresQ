@@ -52,8 +52,10 @@ class SmartMatchCard extends StatelessWidget {
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
                         color: AppColors.aiAccent,
-                        letterSpacing: 1.0,
+                        letterSpacing: 0.8,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     Text(
                       match.ngoName,
@@ -62,10 +64,13 @@ class SmartMatchCard extends StatelessWidget {
                         fontWeight: FontWeight.w800,
                         color: AppColors.textPrimary,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
               ),
+              const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
@@ -75,7 +80,7 @@ class SmartMatchCard extends StatelessWidget {
                 child: Text(
                   '${match.overallMatch}% MATCH',
                   style: const TextStyle(
-                    fontSize: 12,
+                    fontSize: 11,
                     fontWeight: FontWeight.w900,
                     color: Colors.white,
                   ),
@@ -104,7 +109,10 @@ class SmartMatchCard extends StatelessWidget {
                   backgroundColor: AppColors.aiAccent,
                   foregroundColor: Colors.white,
                 ),
-                child: const Text('DISPATCH OPPORTUNITY TO THIS NGO'),
+                child: const FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text('DISPATCH OPPORTUNITY TO THIS NGO'),
+                ),
               ),
             ),
           ],
@@ -118,14 +126,18 @@ class SmartMatchCard extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 6.0),
       child: Row(
         children: [
-          SizedBox(
-            width: 130,
+          Flexible(
+            flex: 4,
             child: Text(
               label,
               style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
+          const SizedBox(width: 8),
           Expanded(
+            flex: 5,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(4),
               child: LinearProgressIndicator(

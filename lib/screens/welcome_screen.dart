@@ -135,13 +135,17 @@ class FoodresQWelcomeScreen extends StatelessWidget {
                                   child: const Icon(Icons.recycling_rounded, color: AppColors.ngoPrimary, size: 20),
                                 ),
                                 const SizedBox(width: 10),
-                                const Text(
-                                  'CIRCULAR FOOD RECOVERY NETWORK',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w800,
-                                    color: AppColors.ngoPrimary,
-                                    letterSpacing: 1.0,
+                                const Expanded(
+                                  child: Text(
+                                    'CIRCULAR FOOD RECOVERY NETWORK',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w800,
+                                      color: AppColors.ngoPrimary,
+                                      letterSpacing: 0.8,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                               ],
@@ -164,7 +168,7 @@ class FoodresQWelcomeScreen extends StatelessWidget {
                               crossAxisCount: 2,
                               crossAxisSpacing: 12,
                               mainAxisSpacing: 12,
-                              childAspectRatio: 1.35,
+                              childAspectRatio: 1.2,
                               children: [
                                 _buildRoleInterfaceCard(
                                   title: 'Restaurant',
@@ -247,20 +251,23 @@ class FoodresQWelcomeScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16),
                       ),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Text(
-                          'GET STARTED',
-                          style: TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 0.8,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Text(
+                            'GET STARTED',
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 0.8,
+                            ),
                           ),
-                        ),
-                        SizedBox(width: 8),
-                        Icon(Icons.arrow_forward_rounded, size: 22),
-                      ],
+                          SizedBox(width: 8),
+                          Icon(Icons.arrow_forward_rounded, size: 22),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -332,48 +339,52 @@ class FoodresQWelcomeScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(emoji, style: const TextStyle(fontSize: 18)),
+                      Text(emoji, style: const TextStyle(fontSize: 16)),
                       const SizedBox(width: 4),
                       Flexible(
-                        child: Text(
-                          title,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.white,
-                            letterSpacing: -0.3,
-                            shadows: [
-                              Shadow(
-                                color: Colors.black87,
-                                offset: Offset(0, 1.5),
-                                blurRadius: 4,
-                              ),
-                            ],
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            title,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.white,
+                              letterSpacing: -0.3,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.black87,
+                                  offset: Offset(0, 1.5),
+                                  blurRadius: 4,
+                                ),
+                              ],
+                            ),
+                            maxLines: 1,
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white.withOpacity(0.9),
-                      shadows: const [
-                        Shadow(
-                          color: Colors.black87,
-                          offset: Offset(0, 1),
-                          blurRadius: 3,
-                        ),
-                      ],
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white.withOpacity(0.9),
+                        shadows: const [
+                          Shadow(
+                            color: Colors.black87,
+                            offset: Offset(0, 1),
+                            blurRadius: 3,
+                          ),
+                        ],
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
                     ),
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),

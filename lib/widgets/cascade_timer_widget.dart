@@ -48,29 +48,36 @@ class CascadeTimerWidget extends StatelessWidget {
         children: [
           Row(
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppColors.critical.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  children: const [
-                    Icon(Icons.timer, color: AppColors.critical, size: 14),
-                    SizedBox(width: 4),
-                    Text(
-                      '8-MINUTE CASCADE ACTIVE',
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.critical,
-                        letterSpacing: 0.8,
+              Flexible(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.critical.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Icon(Icons.timer, color: AppColors.critical, size: 14),
+                      SizedBox(width: 4),
+                      Flexible(
+                        child: Text(
+                          '8-MINUTE CASCADE ACTIVE',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.critical,
+                            letterSpacing: 0.8,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-              const Spacer(),
+              const SizedBox(width: 8),
               Text(
                 'Opportunity #${item.id}',
                 style: const TextStyle(
@@ -95,12 +102,16 @@ class CascadeTimerWidget extends StatelessWidget {
             children: [
               const Icon(Icons.store, size: 14, color: AppColors.textSecondary),
               const SizedBox(width: 4),
-              Text(
-                '${item.restaurantName} • ${item.distanceKm} km away',
-                style: const TextStyle(
-                  fontSize: 13,
-                  color: AppColors.textSecondary,
-                  fontWeight: FontWeight.w500,
+              Expanded(
+                child: Text(
+                  '${item.restaurantName} • ${item.distanceKm} km away',
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],

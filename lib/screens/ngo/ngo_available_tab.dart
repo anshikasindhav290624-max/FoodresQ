@@ -259,16 +259,23 @@ class _NgoAvailableTabState extends State<NgoAvailableTab> {
                                         child: Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Row(
-                                              children: [
-                                                const Icon(Icons.restaurant_menu, color: AppColors.ngoPrimary, size: 18),
-                                                const SizedBox(width: 6),
-                                                Text(
-                                                  '${item.mealsCount} Prepared Meals',
-                                                  style: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.ngoPrimary, fontSize: 13),
-                                                ),
-                                              ],
+                                            Expanded(
+                                              child: Row(
+                                                children: [
+                                                  const Icon(Icons.restaurant_menu, color: AppColors.ngoPrimary, size: 18),
+                                                  const SizedBox(width: 6),
+                                                  Expanded(
+                                                    child: Text(
+                                                      '${item.mealsCount} Prepared Meals',
+                                                      style: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.ngoPrimary, fontSize: 13),
+                                                      maxLines: 1,
+                                                      overflow: TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
+                                            const SizedBox(width: 6),
                                             const Text('Pickup before 10:30 PM', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
                                           ],
                                         ),
