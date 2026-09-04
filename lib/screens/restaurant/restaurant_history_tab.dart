@@ -35,10 +35,10 @@ class RestaurantHistoryTab extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.border),
+                    border: Border.all(color: AppColors.border, width: 1.2),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.04),
+                        color: Colors.black.withValues(alpha: 0.04),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -61,7 +61,17 @@ class RestaurantHistoryTab extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text('#${txn.id}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: AppColors.textSecondary)),
-                                Text(txn.status, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: AppColors.success)),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.success.withValues(alpha: 0.12),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    txn.status.toUpperCase(),
+                                    style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 10, color: AppColors.success),
+                                  ),
+                                ),
                               ],
                             ),
                             const SizedBox(height: 4),

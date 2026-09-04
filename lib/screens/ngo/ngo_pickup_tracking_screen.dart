@@ -202,7 +202,7 @@ class _NgoPickupTrackingScreenState extends State<NgoPickupTrackingScreen> {
                             final count = int.tryParse(_peopleServedCtrl.text) ?? 35;
                             state.completeFoodPickupAndDistribution(item, count);
 
-                            _showSuccessDialog(context, state, count);
+                            _showSuccessDialog(context, state, count, item);
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.success,
@@ -229,16 +229,16 @@ class _NgoPickupTrackingScreenState extends State<NgoPickupTrackingScreen> {
                       const Icon(Icons.check_circle_rounded, color: AppColors.success, size: 54),
                       const SizedBox(height: 10),
                       const Text(
-                        'FOOD RECOVERY COMPLETED ✓',
+                        'FOOD RESCUE COMPLETED ✓',
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.success),
                       ),
                       const SizedBox(height: 12),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: const [
-                          Text('✓ 35 Meals Saved', style: TextStyle(fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
-                          Text('✓ 35 People Served', style: TextStyle(fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
-                          Text('✓ 14 kg Diverted', style: TextStyle(fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
+                        children: [
+                          Text('✓ ${item.mealsCount} Meals Rescued', style: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
+                          Text('✓ ${_peopleServedCtrl.text} Served', style: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
+                          Text('✓ ${item.restaurantName}', style: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
                         ],
                       ),
                     ],
@@ -252,7 +252,10 @@ class _NgoPickupTrackingScreenState extends State<NgoPickupTrackingScreen> {
     );
   }
 
-  void _showSuccessDialog(BuildContext context, AppState state, int count) {
+  void _showSuccessDialog(BuildContext context, AppState state, int count, SurplusItem item) {
+    final double kgRescued = (item.mealsCount * 0.4);
+    final int pointsEarned = (kgRescued * 10).round().clamp(50, 5000);
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -262,21 +265,65 @@ class _NgoPickupTrackingScreenState extends State<NgoPickupTrackingScreen> {
           children: const [
             Icon(Icons.stars, color: AppColors.warning, size: 28),
             SizedBox(width: 8),
-            Text('Trust Score Updated!'),
+            Text('Food Rescue Completed!'),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              '⭐ Trust Score increased to ${state.trustScore.overallScore} (+4 points)!',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.ngoPrimary),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.success.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.success.withOpacity(0.3)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${item.mealsCount} meals rescued from ${item.restaurantName}',
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${kgRescued.toStringAsFixed(0)} kg food diverted from waste',
+                    style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.warning.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.warning.withOpacity(0.4)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.workspace_premium, color: AppColors.warning, size: 24),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      '⭐ +$pointsEarned FoodResQ Reward Points awarded to ${item.restaurantName}!',
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFFB45309)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              '⭐ NGO Trust Score increased to ${state.trustScore.overallScore} (+4 points)!',
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.ngoPrimary),
+            ),
+            const SizedBox(height: 8),
             Text('• Served $count beneficiaries with 35 meals.'),
-            const Text('• Prevented 14 kg food waste.'),
-            const Text('• Updated transaction ledger.'),
+            Text('• Prevented ${kgRescued.toStringAsFixed(0)} kg food waste.'),
+            const Text('• Circular transaction ledger updated.'),
           ],
         ),
         actions: [

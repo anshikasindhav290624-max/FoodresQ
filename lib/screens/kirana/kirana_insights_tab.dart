@@ -606,6 +606,171 @@ class _KiranaInsightsTabState extends State<KiranaInsightsTab> {
                 ],
               ),
             ),
+            const SizedBox(height: 20),
+
+            // SECTION 8 — FOODRESQ CIRCULAR BENEFIT & RESTAURANT PURCHASES
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: const Color(0xFFD97706).withOpacity(0.3), width: 1.5),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFD97706).withOpacity(0.06),
+                    blurRadius: 14,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFEF3C7),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(Icons.sync_alt_rounded, color: Color(0xFFB45309), size: 22),
+                      ),
+                      const SizedBox(width: 12),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'FoodResQ Circular Economy Benefit',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+                            ),
+                            Text(
+                              'Restaurant Rewards → Kirana Near-Expiry Purchases',
+                              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFECFDF5),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: const Color(0xFF10B981).withOpacity(0.4)),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.check_circle_outline, size: 12, color: Color(0xFF059669)),
+                            SizedBox(width: 4),
+                            Text('Active Loop', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF059669))),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF9FAFB),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(color: AppColors.border),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Near-Expiry Sold', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                              const SizedBox(height: 4),
+                              Text(
+                                '${state.discountOffers.where((o) => o.isPurchased).length + state.kiranaAssistedSalesCount} items',
+                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.textPrimary),
+                              ),
+                              const SizedBox(height: 2),
+                              const Text('Diverted from waste', style: TextStyle(fontSize: 10, color: AppColors.success, fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF9FAFB),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(color: AppColors.border),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Restaurant Orders', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                              const SizedBox(height: 4),
+                              Text(
+                                '${state.kiranaAssistedSalesCount} purchases',
+                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Color(0xFFD97706)),
+                              ),
+                              const SizedBox(height: 2),
+                              const Text('FoodResQ Points assisted', style: TextStyle(fontSize: 10, color: Color(0xFFB45309), fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF9FAFB),
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(color: AppColors.border),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Revenue Recovered', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                              const SizedBox(height: 4),
+                              Text(
+                                '₹${(rangeData.nearExpirySalesVal + state.kiranaPointsAssistedRevenue).toStringAsFixed(0)}',
+                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.kiranaPrimary),
+                              ),
+                              const SizedBox(height: 2),
+                              const Text('Zero disposal loss', style: TextStyle(fontSize: 10, color: AppColors.success, fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFFBEB),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFFFDE68A)),
+                    ),
+                    child: Row(
+                      children: const [
+                        Icon(Icons.info_outline, size: 16, color: Color(0xFFB45309)),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'When partner restaurants rescue surplus with NGOs, they earn FoodResQ Points that subsidize purchases of your near-expiry stock!',
+                            style: TextStyle(fontSize: 12, color: Color(0xFF92400E), height: 1.3),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),

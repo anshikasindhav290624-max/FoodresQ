@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../state/app_state.dart';
 import '../../theme/app_theme.dart';
-import '../../widgets/app_image.dart';
 
 class CreateDiscountScreen extends StatefulWidget {
   const CreateDiscountScreen({super.key});

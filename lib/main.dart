@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'state/app_state.dart';
 import 'theme/app_theme.dart';
-import 'screens/splash_screen.dart';
+import 'screens/welcome_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,7 +25,7 @@ class RescuEatsApp extends StatelessWidget {
           title: 'FoodresQ — Rescue Food. Recover Value. Reduce Waste.',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.getThemeData(state.activeRole),
-          home: const SplashScreen(),
+          home: const FoodresQWelcomeScreen(),
         );
       },
     );

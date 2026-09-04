@@ -100,6 +100,99 @@ class AppState extends ChangeNotifier {
   int _restaurantSavedMealsToday = 18;
   int get restaurantSavedMealsToday => _restaurantSavedMealsToday;
 
+  // FoodResQ Reward Points State (Connected Circular Economy: Restaurant <-> NGO <-> Kirana)
+  int _restaurantPoints = 2450;
+  int get restaurantPoints => _restaurantPoints;
+  int _pointsEarnedThisMonth = 850;
+  int get pointsEarnedThisMonth => _pointsEarnedThisMonth;
+  int _pointsRedeemedTotal = 600;
+  int get pointsRedeemedTotal => _pointsRedeemedTotal;
+  double _restaurantPointsDiscountSaved = 200.0;
+  double get restaurantPointsDiscountSaved => _restaurantPointsDiscountSaved;
+
+  int _kiranaAssistedSalesCount = 3;
+  int get kiranaAssistedSalesCount => _kiranaAssistedSalesCount;
+  double _kiranaPointsAssistedRevenue = 1200.0;
+  double get kiranaPointsAssistedRevenue => _kiranaPointsAssistedRevenue;
+
+  final List<PointTransaction> _pointHistory = [
+    PointTransaction(
+      id: 'PT-101',
+      points: 250,
+      title: 'Surplus Food Rescued',
+      description: '25 kg cooked meals verified by Helping Hands NGO',
+      quantityStr: '25 kg',
+      timestamp: DateTime.now().subtract(const Duration(hours: 3)),
+      isEarned: true,
+      relatedId: 'TXN10481',
+    ),
+    PointTransaction(
+      id: 'PT-102',
+      points: 500,
+      title: 'Food Rescue Completed',
+      description: '50 kg rice & curries safely distributed to beneficiaries',
+      quantityStr: '50 kg',
+      timestamp: DateTime.now().subtract(const Duration(days: 1, hours: 2)),
+      isEarned: true,
+      relatedId: 'TXN10478',
+    ),
+    PointTransaction(
+      id: 'PT-103',
+      points: -300,
+      title: 'Discount Redeemed',
+      description: 'Near-expiry grocery purchase from Sharma General Store',
+      quantityStr: '₹60 OFF',
+      timestamp: DateTime.now().subtract(const Duration(days: 2)),
+      isEarned: false,
+      relatedId: 'DIS-201',
+    ),
+    PointTransaction(
+      id: 'PT-104',
+      points: 100,
+      title: 'Surplus Food Rescued',
+      description: '10 kg fresh breads rescued via smart dispatch',
+      quantityStr: '10 kg',
+      timestamp: DateTime.now().subtract(const Duration(days: 4)),
+      isEarned: true,
+      relatedId: 'TXN10470',
+    ),
+  ];
+  List<PointTransaction> get pointHistory => List.unmodifiable(_pointHistory);
+
+  // Configurable Reward Tier System
+  String get rewardTierName {
+    if (_restaurantPoints >= 3000) return 'FOODRESQ CHAMPION';
+    if (_restaurantPoints >= 1500) return 'RESCUER';
+    if (_restaurantPoints >= 500) return 'SAVER';
+    return 'STARTER';
+  }
+
+  String get rewardTierEmoji {
+    if (_restaurantPoints >= 3000) return '🏆';
+    if (_restaurantPoints >= 1500) return '♻️';
+    if (_restaurantPoints >= 500) return '🌿';
+    return '🌱';
+  }
+
+  int get nextTierThreshold {
+    if (_restaurantPoints >= 3000) return 3000;
+    if (_restaurantPoints >= 1500) return 3000;
+    if (_restaurantPoints >= 500) return 1500;
+    return 500;
+  }
+
+  int get pointsToNextTier {
+    if (_restaurantPoints >= 3000) return 0;
+    return nextTierThreshold - _restaurantPoints;
+  }
+
+  double get tierProgress {
+    if (_restaurantPoints >= 3000) return 1.0;
+    if (_restaurantPoints >= 1500) return (_restaurantPoints - 1500) / 1500.0;
+    if (_restaurantPoints >= 500) return (_restaurantPoints - 500) / 1000.0;
+    return _restaurantPoints / 500.0;
+  }
+
   // Vendor Savings Stats
   double _vendorTotalPurchases = 28500.0;
   double get vendorTotalPurchases => _vendorTotalPurchases;
@@ -633,6 +726,26 @@ class AppState extends ChangeNotifier {
     // Dynamically update Trust Score (+4 points demo effect!)
     _trustScore.addSuccessfulDistribution();
 
+    // FoodResQ Reward Point System: Restaurant earns 10 points per kg rescued (Configurable)
+    final massKg = (item.mealsCount * 0.4).round().clamp(5, 500);
+    final pointsEarned = (massKg * 10).clamp(50, 2000);
+    _restaurantPoints += pointsEarned;
+    _pointsEarnedThisMonth += pointsEarned;
+
+    _pointHistory.insert(
+      0,
+      PointTransaction(
+        id: 'PT-${DateTime.now().millisecondsSinceEpoch}',
+        points: pointsEarned,
+        title: 'Surplus Food Rescued',
+        description: '${item.restaurantName} surplus verified & rescued by $_ngoName',
+        quantityStr: '$massKg kg (${item.mealsCount} meals)',
+        timestamp: DateTime.now(),
+        isEarned: true,
+        relatedId: item.id,
+      ),
+    );
+
     // Create transaction record
     final newTxn = TransactionRecord(
       id: 'TXN${10483 + _transactions.length}',
@@ -646,26 +759,38 @@ class AppState extends ChangeNotifier {
       status: 'COMPLETED',
       participant1: item.restaurantName,
       participant2: 'Helping Hands Foundation',
-      impactSummary: '${item.mealsCount} Meals Saved • $peopleServedCount People Served • ⭐ Trust Score Updated to ${_trustScore.overallScore}',
+      impactSummary: '${item.mealsCount} Meals Saved • $peopleServedCount People Served • ⭐ +$pointsEarned FoodResQ Points Awarded to ${item.restaurantName}',
       timeline: [
         TransactionStep(title: 'Food Posted by ${item.restaurantName}', timestamp: 'Just now', isCompleted: true),
         TransactionStep(title: 'NGO Accepted (8-Min Window)', timestamp: 'Just now', isCompleted: true),
         TransactionStep(title: 'Food Collected', timestamp: 'Just now', isCompleted: true),
         TransactionStep(title: 'Distributed to Beneficiaries', timestamp: 'Just now', isCompleted: true),
+        TransactionStep(title: '⭐ +$pointsEarned FoodResQ Points Credited', timestamp: 'Just now', isCompleted: true),
       ],
     );
 
     _transactions.insert(0, newTxn);
 
-    // Notification
+    // Notifications for both NGO and Restaurant
     _notifications.insert(
       0,
       NotificationModel(
         id: 'NOTIF-DIST-${DateTime.now().millisecondsSinceEpoch}',
         title: '🎉 Food Recovery Completed!',
-        message: 'Successfully served $peopleServedCount people. Trust Score updated to ⭐ ${_trustScore.overallScore} (+4 points)!',
+        message: 'Successfully served $peopleServedCount people ($massKg kg rescued). ${item.restaurantName} awarded +$pointsEarned FoodResQ Points!',
         timestamp: DateTime.now(),
         targetRole: 'NGO',
+      ),
+    );
+
+    _notifications.insert(
+      0,
+      NotificationModel(
+        id: 'NOTIF-PTS-${DateTime.now().millisecondsSinceEpoch}',
+        title: '⭐ +$pointsEarned FoodResQ Points Awarded!',
+        message: 'Helping Hands Foundation completed distribution of your $massKg kg food surplus. Use points for Kirana discounts!',
+        timestamp: DateTime.now(),
+        targetRole: 'RESTAURANT',
       ),
     );
 
@@ -814,6 +939,103 @@ class AppState extends ChangeNotifier {
     );
 
     notifyListeners();
+  }
+
+  // Restaurant Action: Connected Circular Redemption - Buy Kirana near-expiry products with FoodResQ Points
+  Map<String, dynamic> redeemPointsForKiranaOffer({
+    required DiscountOffer offer,
+    required int pointsToUse,
+  }) {
+    if (pointsToUse <= 0) {
+      return {'success': false, 'message': 'Invalid points amount.'};
+    }
+    if (_restaurantPoints < pointsToUse) {
+      return {'success': false, 'message': 'Not enough FoodResQ Points.'};
+    }
+
+    // Configurable redemption: 500 points = ₹100 discount (₹0.20 per point)
+    final discountAmount = (pointsToUse / 500.0) * 100.0;
+    final originalCost = offer.discountedPrice * offer.availableQuantity;
+    final finalPrice = (originalCost - discountAmount).clamp(0.0, double.infinity);
+
+    // Deduct points from Restaurant
+    _restaurantPoints -= pointsToUse;
+    _pointsRedeemedTotal += pointsToUse;
+    _restaurantPointsDiscountSaved += discountAmount;
+
+    // Update Kirana circular analytics
+    _kiranaRevenueRecovered += finalPrice;
+    _kiranaAssistedSalesCount += 1;
+    _kiranaPointsAssistedRevenue += finalPrice;
+    offer.isPurchased = true;
+
+    // Add Point Transaction Record
+    _pointHistory.insert(
+      0,
+      PointTransaction(
+        id: 'PT-RED-${DateTime.now().millisecondsSinceEpoch}',
+        points: -pointsToUse,
+        title: 'Discount Redeemed',
+        description: 'Near-expiry ${offer.productName} from ${offer.kiranaName}',
+        quantityStr: '₹${discountAmount.toStringAsFixed(0)} OFF',
+        timestamp: DateTime.now(),
+        isEarned: false,
+        relatedId: offer.id,
+      ),
+    );
+
+    // Add TransactionRecord to global ledger
+    final newTxn = TransactionRecord(
+      id: 'TXN${10483 + _transactions.length}',
+      timestamp: DateTime.now(),
+      itemTitle: '${offer.availableQuantity} ${offer.unit} ${offer.productName} (Rewards Discount)',
+      quantityStr: '${offer.availableQuantity} ${offer.unit}',
+      roleType: 'RESTAURANT',
+      originalValue: originalCost,
+      finalValue: finalPrice,
+      savedValue: discountAmount + (offer.originalPrice * offer.availableQuantity - originalCost),
+      status: 'COMPLETED',
+      participant1: 'Urban Tadka Restaurant',
+      participant2: offer.kiranaName,
+      impactSummary: 'Redeemed $pointsToUse FoodResQ Points • Saved ₹${discountAmount.toStringAsFixed(0)} extra • Kirana recovered ₹${finalPrice.toStringAsFixed(0)}',
+      timeline: [
+        TransactionStep(title: 'Points Applied by Restaurant', timestamp: 'Just now', isCompleted: true),
+        TransactionStep(title: 'Kirana Stock Reserved & Cleared', timestamp: 'Just now', isCompleted: true),
+        TransactionStep(title: 'Zero-Waste Purchase Finalized', timestamp: 'Just now', isCompleted: true),
+      ],
+    );
+    _transactions.insert(0, newTxn);
+
+    // Notifications
+    _notifications.insert(
+      0,
+      NotificationModel(
+        id: 'NOTIF-PTS-${DateTime.now().millisecondsSinceEpoch}',
+        title: '⭐ FoodResQ Points Redeemed!',
+        message: 'You used $pointsToUse points to save ₹${discountAmount.toStringAsFixed(0)} on ${offer.productName} from ${offer.kiranaName}!',
+        timestamp: DateTime.now(),
+        targetRole: 'RESTAURANT',
+      ),
+    );
+
+    _notifications.insert(
+      0,
+      NotificationModel(
+        id: 'NOTIF-KIR-${DateTime.now().millisecondsSinceEpoch}',
+        title: '🏪 Near-Expiry Stock Sold via FoodResQ Points!',
+        message: 'Urban Tadka purchased ${offer.productName}. Recovered ₹${finalPrice.toStringAsFixed(0)} value for your store!',
+        timestamp: DateTime.now(),
+        targetRole: 'KIRANA',
+      ),
+    );
+
+    notifyListeners();
+    return {
+      'success': true,
+      'message': 'Successfully redeemed $pointsToUse points! Saved ₹${discountAmount.toStringAsFixed(0)}.',
+      'finalPrice': finalPrice,
+      'discount': discountAmount,
+    };
   }
 
   void markNotificationRead(String id) {
