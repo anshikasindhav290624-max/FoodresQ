@@ -78,11 +78,12 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(24),
+                  width: 100,
+                  height: 100,
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.15),
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white.withOpacity(0.3), width: 2),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: Colors.white.withOpacity(0.5), width: 2),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.2),
@@ -91,10 +92,11 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                       ),
                     ],
                   ),
-                  child: const Icon(
-                    Icons.eco_rounded,
-                    size: 72,
-                    color: Colors.white,
+                  clipBehavior: Clip.antiAlias,
+                  padding: const EdgeInsets.all(8),
+                  child: Image.asset(
+                    'assets/images/foodresq_logo.png',
+                    fit: BoxFit.contain,
                   ),
                 ),
                 const SizedBox(height: 24),

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../state/app_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_image.dart';
+import '../widgets/foodresq_logo.dart';
 import '../widgets/subtle_background_animation.dart';
 import 'role_auth_screen.dart';
 
@@ -13,14 +14,6 @@ class WelcomeRoleScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
       body: SubtleBackgroundAnimation(
         role: UserRole.ngo,
         child: SafeArea(
@@ -29,26 +22,17 @@ class WelcomeRoleScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header brand pill
+                // Header brand pill with Back Button
                 Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: AppColors.ngoPrimary.withOpacity(0.12),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.eco_rounded, color: AppColors.ngoPrimary, size: 22),
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
+                      onPressed: () => Navigator.pop(context),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
                     ),
-                    const SizedBox(width: 10),
-                    const Text(
-                      'FoodresQ',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w900,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
+                    const SizedBox(width: 12),
+                    const FoodResQLogo(size: 32, fontSize: 20),
                   ],
                 ),
                 const SizedBox(height: 20),

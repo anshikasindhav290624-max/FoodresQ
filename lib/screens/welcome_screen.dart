@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_image.dart';
+import '../widgets/foodresq_logo.dart';
 import '../widgets/subtle_background_animation.dart';
 import 'welcome_role_screen.dart';
 
@@ -23,33 +24,8 @@ class FoodresQWelcomeScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 12),
-                      // Header Brand Pill
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: AppColors.ngoPrimary.withOpacity(0.12),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.eco_rounded,
-                              color: AppColors.ngoPrimary,
-                              size: 26,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          const Text(
-                            'FoodresQ',
-                            style: TextStyle(
-                              fontSize: 26,
-                              fontWeight: FontWeight.w900,
-                              color: AppColors.textPrimary,
-                              letterSpacing: -0.5,
-                            ),
-                          ),
-                        ],
-                      ),
+                      // Header Brand Area: [FoodResQ Logo] FoodResQ
+                      const FoodResQLogo(),
 
                       const SizedBox(height: 24),
 

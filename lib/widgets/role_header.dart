@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../state/app_state.dart';
 import '../theme/app_theme.dart';
 import 'ecosystem_diagram.dart';
+import 'foodresq_logo.dart';
 
 class RoleHeader extends StatelessWidget {
   final String title;
@@ -33,6 +34,9 @@ class RoleHeader extends StatelessWidget {
         children: [
           Row(
             children: [
+              // FoodResQ Logo Mark
+              const FoodResQLogo(size: 26, showText: false),
+              const SizedBox(width: 8),
               // Role Badge (Static Role Indicator)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
