@@ -4,6 +4,7 @@ import '../state/app_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_image.dart';
 import '../widgets/subtle_background_animation.dart';
+import '../services/auth_service.dart';
 import 'auth_screen.dart';
 import 'ngo/ngo_main_screen.dart';
 import 'restaurant/restaurant_main_screen.dart';
@@ -23,6 +24,7 @@ class _RoleAuthScreenState extends State<RoleAuthScreen> {
   final _emailCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   bool _obscurePassword = true;
+  bool _isLoadingGoogle = false;
 
   @override
   void initState() {
@@ -55,30 +57,107 @@ class _RoleAuthScreenState extends State<RoleAuthScreen> {
     super.dispose();
   }
 
+  Widget _getTargetScreen() {
+    switch (widget.role) {
+      case UserRole.ngo:
+        return const NgoMainScreen();
+      case UserRole.restaurant:
+        return const RestaurantMainScreen();
+      case UserRole.vendor:
+        return const VendorMainScreen();
+      case UserRole.kirana:
+        return const KiranaMainScreen();
+    }
+  }
+
+  void _navigateToRoleDashboard() {
+    final targetScreen = _getTargetScreen();
+    Navigator.of(context).pushAndRemoveUntil(
+      PageRouteBuilder(
+        pageBuilder: (context, anim, secAnim) => targetScreen,
+        transitionsBuilder: (context, anim, secAnim, child) {
+          return FadeTransition(
+            opacity: CurvedAnimation(parent: anim, curve: Curves.easeInOut),
+            child: child,
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 350),
+      ),
+      (route) => false,
+    );
+  }
+
+  Future<void> _signInWithGoogle() async {
+    if (_isLoadingGoogle) return;
+
+    setState(() {
+      _isLoadingGoogle = true;
+    });
+
+    try {
+      final user = await AuthService.instance.signInWithGoogle();
+      if (!mounted) return;
+
+      if (user != null) {
+        final state = Provider.of<AppState>(context, listen: false);
+        state.setRole(widget.role);
+        state.setAuthenticatedUser(
+          name: user.displayName,
+          email: user.email,
+          photoUrl: user.photoUrl,
+        );
+
+        if (user.isDemoFallback) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Connected via Google (${user.email})'),
+              backgroundColor: AppColors.getPrimaryForRole(widget.role),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+
+        _navigateToRoleDashboard();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Google Sign-In: $e'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoadingGoogle = false;
+        });
+      }
+    }
+  }
+
+  String _getDefaultOrgName(UserRole role) {
+    switch (role) {
+      case UserRole.ngo:
+        return 'Helping Hands Foundation';
+      case UserRole.restaurant:
+        return 'Urban Tadka Restaurant';
+      case UserRole.vendor:
+        return 'FreshBuy Wholesale Traders';
+      case UserRole.kirana:
+        return 'Sharma General Store';
+    }
+  }
+
   void _signIn() {
     final state = Provider.of<AppState>(context, listen: false);
     state.setRole(widget.role);
-
-    Widget targetScreen;
-    switch (widget.role) {
-      case UserRole.ngo:
-        targetScreen = const NgoMainScreen();
-        break;
-      case UserRole.restaurant:
-        targetScreen = const RestaurantMainScreen();
-        break;
-      case UserRole.vendor:
-        targetScreen = const VendorMainScreen();
-        break;
-      case UserRole.kirana:
-        targetScreen = const KiranaMainScreen();
-        break;
-    }
-
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (context) => targetScreen),
-      (route) => false,
+    state.setAuthenticatedUser(
+      name: _getDefaultOrgName(widget.role),
+      email: _emailCtrl.text.isNotEmpty ? _emailCtrl.text : 'user@foodresq.org',
     );
+    _navigateToRoleDashboard();
   }
 
   String _getContinueRoleLabel() {
@@ -231,7 +310,7 @@ class _RoleAuthScreenState extends State<RoleAuthScreen> {
 
                 // Continue with Google Button
                 OutlinedButton(
-                  onPressed: _signIn,
+                  onPressed: _isLoadingGoogle ? null : _signInWithGoogle,
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.textPrimary,
                     backgroundColor: Colors.white,
@@ -242,21 +321,30 @@ class _RoleAuthScreenState extends State<RoleAuthScreen> {
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Text('G ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Color(0xFF4285F4))),
-                      SizedBox(width: 8),
-                      Text(
-                        'Continue with Google',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
+                  child: _isLoadingGoogle
+                      ? SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.2,
+                            valueColor: AlwaysStoppedAnimation<Color>(roleColor),
+                          ),
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Text('G ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Color(0xFF4285F4))),
+                            SizedBox(width: 8),
+                            Text(
+                              'Continue with Google',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
                 ),
 
                 const SizedBox(height: 20),

@@ -73,6 +73,10 @@ class _AuthScreenState extends State<AuthScreen> {
   void _completeAuth() {
     final state = Provider.of<AppState>(context, listen: false);
     state.setRole(widget.role);
+    state.setAuthenticatedUser(
+      name: _orgNameCtrl.text.isNotEmpty ? _orgNameCtrl.text : 'Verified Organization',
+      email: _emailCtrl.text.isNotEmpty ? _emailCtrl.text : 'contact@foodresq.org',
+    );
 
     Widget targetScreen;
     switch (widget.role) {
@@ -91,7 +95,16 @@ class _AuthScreenState extends State<AuthScreen> {
     }
 
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (context) => targetScreen),
+      PageRouteBuilder(
+        pageBuilder: (context, anim, secAnim) => targetScreen,
+        transitionsBuilder: (context, anim, secAnim, child) {
+          return FadeTransition(
+            opacity: CurvedAnimation(parent: anim, curve: Curves.easeInOut),
+            child: child,
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 350),
+      ),
       (route) => false,
     );
   }

@@ -8,6 +8,7 @@ import '../../widgets/subtle_background_animation.dart';
 import '../../widgets/trust_score_badge.dart';
 import '../welcome_screen.dart';
 import 'ngo_trust_score_screen.dart';
+import '../../services/auth_service.dart';
 
 class NgoProfileTab extends StatefulWidget {
   const NgoProfileTab({super.key});
@@ -467,9 +468,17 @@ class _NgoProfileTabState extends State<NgoProfileTab> {
                   subtitle: const Text('Sign out of Helping Hands NGO portal', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
                   trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 15, color: AppColors.critical),
                   onTap: () {
+                    AuthService.instance.signOut();
+                    state.signOutUser();
                     Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (context) => const FoodresQWelcomeScreen()),
+                      PageRouteBuilder(
+                        pageBuilder: (context, anim, secAnim) => const FoodresQWelcomeScreen(),
+                        transitionsBuilder: (context, anim, secAnim, child) {
+                          return FadeTransition(opacity: anim, child: child);
+                        },
+                        transitionDuration: const Duration(milliseconds: 300),
+                      ),
                       (route) => false,
                     );
                   },

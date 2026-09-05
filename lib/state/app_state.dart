@@ -8,6 +8,39 @@ class AppState extends ChangeNotifier {
   UserRole _activeRole = UserRole.ngo;
   UserRole get activeRole => _activeRole;
 
+  // User Authentication State
+  String? _userDisplayName;
+  String? get userDisplayName => _userDisplayName;
+
+  String? _userEmail;
+  String? get userEmail => _userEmail;
+
+  String? _userPhotoUrl;
+  String? get userPhotoUrl => _userPhotoUrl;
+
+  bool _isAuthenticated = false;
+  bool get isAuthenticated => _isAuthenticated;
+
+  void setAuthenticatedUser({
+    required String name,
+    required String email,
+    String? photoUrl,
+  }) {
+    _userDisplayName = name;
+    _userEmail = email;
+    _userPhotoUrl = photoUrl;
+    _isAuthenticated = true;
+    notifyListeners();
+  }
+
+  void signOutUser() {
+    _userDisplayName = null;
+    _userEmail = null;
+    _userPhotoUrl = null;
+    _isAuthenticated = false;
+    notifyListeners();
+  }
+
   // NGO Requirement Signal State
   bool _ngoAcceptingFood = true;
   bool get ngoAcceptingFood => _ngoAcceptingFood;

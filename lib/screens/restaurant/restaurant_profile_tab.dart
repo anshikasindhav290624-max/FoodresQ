@@ -6,6 +6,7 @@ import '../../widgets/app_image.dart';
 import '../../widgets/profile_support_widgets.dart';
 import '../../widgets/subtle_background_animation.dart';
 import '../welcome_screen.dart';
+import '../../services/auth_service.dart';
 
 class RestaurantProfileTab extends StatefulWidget {
   const RestaurantProfileTab({super.key});
@@ -552,9 +553,17 @@ class _RestaurantProfileTabState extends State<RestaurantProfileTab> {
                   subtitle: const Text('Sign out of Urban Tadka Restaurant portal', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
                   trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 15, color: AppColors.critical),
                   onTap: () {
+                    AuthService.instance.signOut();
+                    state.signOutUser();
                     Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (context) => const FoodresQWelcomeScreen()),
+                      PageRouteBuilder(
+                        pageBuilder: (context, anim, secAnim) => const FoodresQWelcomeScreen(),
+                        transitionsBuilder: (context, anim, secAnim, child) {
+                          return FadeTransition(opacity: anim, child: child);
+                        },
+                        transitionDuration: const Duration(milliseconds: 300),
+                      ),
                       (route) => false,
                     );
                   },
